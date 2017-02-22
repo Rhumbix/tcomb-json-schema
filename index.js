@@ -39,14 +39,6 @@ var types = {
       t.assert(formats.hasOwnProperty(s.format), '[tcomb-json-schema] Missing format ' + s.format + ', use the (format, predicate) API');
       predicate = and(predicate, formats[s.format]);
     }
-    // if(s.hasOwnProperty('ui:component')){
-    //   if(s['ui:component'] == 'date'){
-    //     return predicate ? t.subtype(t.Date, predicate) : t.Date;
-    //   }
-    //   else if(if(s['ui:component'] == 'signature'){){
-    //     return predicate ? t.subtype(t.Date, predicate) : t.Date;
-    //   }
-    // }
     return predicate ? t.subtype(t.String, predicate) : t.String;
   },
 
@@ -142,7 +134,6 @@ function transform(s) {
   if(s.hasOwnProperty('ui:component')){
     if(registerComponents.hasOwnProperty(s['ui:component'])){
       var type = s['ui:component']
-      delete s['ui:component']
       return registerComponents[type];
     }
   }
