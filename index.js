@@ -129,8 +129,6 @@ var registerComponents = {};
 
 function transform(s) {
   t.assert(t.Object.is(s));
-  console.log("tasnform t:", t)
-  console.log("tasnform s:", s)
   if(s.hasOwnProperty('ui:component')){
     if(registerComponents.hasOwnProperty(s['ui:component'])){
       var type = s['ui:component']
