@@ -79,7 +79,7 @@ var types = {
     return t.Boolean;
   },
 
-  object: function (s) {
+  object: function (s, ui) {
     var props = {};
     var hasProperties = false;
     var required = {};
@@ -91,21 +91,21 @@ var types = {
     for (var k in s.properties) {
       if (s.properties.hasOwnProperty(k)) {
         hasProperties = true;
-        var type = transform(s.properties[k]);
+        var type = transform(s.properties[k], ui.fields && ui.fields.hasOwnProperty(k) ? ui.fields[k] : {});
         props[k] = required[k] || type === t.Boolean ? type : t.maybe(type);
       }
     }
     return hasProperties ? t.struct(props, s.description) : t.Object;
   },
 
-  array: function (s) {
+  array: function (s, ui) {
     var type = t.Array;
     if (s.hasOwnProperty('items')) {
       var items = s.items;
       if (t.Object.is(items)) {
-        type = t.list(transform(s.items));
+        type = t.list(transform(s.items, ui.item));
       } else {
-        return t.tuple(items.map(transform));
+        return t.tuple(items.map(transform)); // todo: need to bind ui as second arg? we aren't using tuples atm
       }
     }
     var predicate;
@@ -127,11 +127,11 @@ var types = {
 var registerTypes = {};
 var registerComponents = {};
 
-function transform(s) {
+function transform(s, ui={}) {
   t.assert(t.Object.is(s));
-  if(s.hasOwnProperty('ui:component')){
-    if(registerComponents.hasOwnProperty(s['ui:component'])){
-      var type = s['ui:component']
+  if(ui.hasOwnProperty('ui:component')){
+    if(registerComponents.hasOwnProperty(ui['ui:component'])){
+      var type = ui['ui:component']
       return registerComponents[type];
     }
   }
@@ -140,11 +140,11 @@ function transform(s) {
   }
   var type = s.type;
   if (SchemaType.is(type)) {
-    return types[type](s);
+    return types[type](s, ui);
   }
   if (t.Array.is(type)) {
     return t.union(type.map(function (type) {
-      return types[type](s);
+      return types[type](s, ui);
     }));
   }
 
