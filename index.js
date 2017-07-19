@@ -127,9 +127,9 @@ var types = {
 var registerTypes = {};
 var registerComponents = {};
 
-function transform(s, ui={}) {
+function transform(s, ui) {
   t.assert(t.Object.is(s));
-  if(ui.hasOwnProperty('ui:component')){
+  if(ui && ui.hasOwnProperty('ui:component')){
     if(registerComponents.hasOwnProperty(ui['ui:component'])){
       var type = ui['ui:component']
       return registerComponents[type];
