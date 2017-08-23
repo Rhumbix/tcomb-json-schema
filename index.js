@@ -130,10 +130,11 @@ var registerComponents = {};
 function transform(s, ui) {
   ui = ui || {}
   t.assert(t.Object.is(s));
-  if(ui.hasOwnProperty('ui:component')){
-    if(registerComponents.hasOwnProperty(ui['ui:component'])){
-      var type = ui['ui:component']
-      return registerComponents[type];
+  // Checking for ui:component within s as opposed to just ui, is kept for backwards compatability.
+  if(ui.hasOwnProperty('ui:component') || s.hasOwnProperty('ui:component')){
+    var uiType = ui.hasOwnProperty('ui:component') ? ui['ui:component'] : s['ui:component']
+    if(registerComponents.hasOwnProperty(uiType)){
+      return registerComponents[uiType];
     }
   }
   if (!s.hasOwnProperty('type')) {
