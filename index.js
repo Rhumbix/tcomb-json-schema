@@ -118,6 +118,26 @@ var types = {
     return predicate ? t.subtype(type, predicate) : type;
   },
 
+  customArray: function (s, ui) {
+    var type = registerComponents['table'] //t.Array;
+    if (s.hasOwnProperty('items')) {
+      var items = s.items;
+      if (t.Object.is(items)) {
+        type = registerComponents['table'](transform(s.items, ui.item));
+      } else {
+        return t.tuple(items.map(transform)); // todo: need to bind ui as second arg? we aren't using tuples atm
+      }
+    }
+    var predicate;
+    if (s.hasOwnProperty('minItems')) {
+      predicate = and(predicate, fcomb.minLength(s.minItems));
+    }
+    if (s.hasOwnProperty('maxItems')) {
+      predicate = and(predicate, fcomb.maxLength(s.maxItems));
+    }
+    return predicate ? t.subtype(type, predicate) : type;
+  },
+
   'null': function () {
     return util.Null;
   }
@@ -134,6 +154,9 @@ function transform(s, ui) {
   if(ui.hasOwnProperty('ui:component') || s.hasOwnProperty('ui:component')){
     var uiType = ui.hasOwnProperty('ui:component') ? ui['ui:component'] : s['ui:component']
     if(registerComponents.hasOwnProperty(uiType)){
+      if(uiType === 'table'){
+        return types['customArray'](s, ui);
+      }
       return registerComponents[uiType];
     }
   }
