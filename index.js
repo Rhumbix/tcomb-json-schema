@@ -98,6 +98,25 @@ var types = {
     return hasProperties ? t.struct(props, s.description) : t.Object;
   },
 
+  customStruct: function (s, ui) {
+    var props = {};
+    var hasProperties = false;
+    var required = {};
+    if (s.required) {
+      s.required.forEach(function (k) {
+        required[k] = true;
+      });
+    }
+    for (var k in s.properties) {
+      if (s.properties.hasOwnProperty(k)) {
+        hasProperties = true;
+        var type = transform(s.properties[k], ui.fields && ui.fields.hasOwnProperty(k) ? ui.fields[k] : {});
+        props[k] = required[k] || type === t.Boolean ? type : t.maybe(type);
+      }
+    }
+    return hasProperties ? registerComponents['selector'](props, s.description) : t.Object;
+  },
+
   array: function (s, ui) {
     var type = t.Array;
     if (s.hasOwnProperty('items')) {
@@ -156,6 +175,9 @@ function transform(s, ui) {
     if(registerComponents.hasOwnProperty(uiType)){
       if(uiType === 'table'){
         return types['customArray'](s, ui);
+      }
+      else if(uiType === 'selector'){
+        return types['customStruct'](s, ui);
       }
       return registerComponents[uiType];
     }
