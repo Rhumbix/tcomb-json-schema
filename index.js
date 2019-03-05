@@ -227,4 +227,35 @@ transform.resetTypes = function resetTypes() {
   registerTypes = {};
 };
 
-module.exports = transform;
+function addFieldPermissions(permission, fields, allKeys, template) {
+    Object.entries(fields).forEach((data) => {
+    const [key, value] = data
+    let exists = []
+    Object.entries(value.fields).forEach((subData) => {
+        const [subKey, subValue] = subData
+        if (allKeys.includes(subKey)) {
+          exists.push(subKey)
+        }
+        if (!subValue["ui:component"] || subValue["ui:component"].includes('auto-fill')) {
+          subValue.factory = template
+        }
+        subValue.editable = permission.field[key][subKey]
+                        && permission.field[key][subKey].editable !== undefined ? permission.field[key][subKey].editable : permission.field.editable
+        subValue.viewable = permission.field[key][subKey]
+                          && permission.field[key][subKey].viewable !== undefined ? permission.field[key][subKey].viewable : permission.field.viewable
+    })
+    const newData = allKeys.filter(x => !exists.includes(x))
+    newData.forEach((key) => {
+      value.fields[key] = {}
+      value.fields[key].factory = template
+      value.fields[key].editable = permission.field.editable
+      value.fields[key].viewable = permission.field.viewable
+    })
+  })
+  return fields
+}
+
+module.exports = {
+  transform,
+  addFieldPermissions
+};
