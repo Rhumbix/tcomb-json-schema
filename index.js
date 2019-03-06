@@ -235,14 +235,18 @@ function getFormOptions(permission, options, fields, properties, template) {
           fields: [],
           order: fields[key].order
       }
-      Object.entries(value.properties).forEach((subData) => {
-          const [subKey] = subData
+      Object.keys(value.properties).forEach((subKey) => {
           newOptions[key].fields[subKey] = fields[key].fields[subKey] ? fields[key].fields[subKey] : {}
+          // Add editable and viewable flags
+          // If flags don't exist, then get flags from parent
           newOptions[key].fields[subKey].editable = permission.field[key][subKey]
               && permission.field[key][subKey].editable !== undefined ? permission.field[key][subKey].editable : permission.field.editable
           newOptions[key].fields[subKey].viewable = permission.field[key][subKey]
               && permission.field[key][subKey].viewable !== undefined ? permission.field[key][subKey].viewable : permission.field.viewable
-          if (!fields[key].fields[subKey]) {
+          // If field doesn't exist or doesn't have ui:component (template) or
+          // ui:component is auto-fill then add textbox tempate     
+          if (!fields[key].fields[subKey] ||
+            (!fields[key].fields[subKey]["ui:component"] || fields[key].fields[subKey]["ui:component"].includes('auto-fill'))) {
               newOptions[key].fields[subKey]['factory'] = template
           }
       })
