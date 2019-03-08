@@ -39,7 +39,12 @@ var types = {
       t.assert(formats.hasOwnProperty(s.format), '[tcomb-json-schema] Missing format ' + s.format + ', use the (format, predicate) API');
       predicate = and(predicate, formats[s.format]);
     }
-    return predicate ? t.subtype(t.String, predicate) : t.String;
+    // Use custom string type if it exists
+    if(registerTypes.hasOwnProperty('string')){
+      return predicate ? t.subtype(s, registerTypes['string']) : registerTypes['string'];
+    }else{
+      return predicate ? t.subtype(t.String, predicate) : t.String;
+    }
   },
 
   number: function (s) {
@@ -213,13 +218,12 @@ transform.resetFormats = function resetFormats() {
   formats = {};
 };
 
-transform.registerType= function registerType(typeName, type) {
+transform.registerType = function registerType(typeName, type) {
   t.assert(!registerTypes.hasOwnProperty(typeName), '[tcomb-json-schema] Duplicated type ' + typeName);
-  t.assert(!SchemaType.is(typeName), '[tcomb-json-schema] Reserved type ' + typeName);
   registerTypes[typeName] = type;
 };
 
-transform.registerComponent= function registerComponent(componentName, type) {
+transform.registerComponent = function registerComponent(componentName, type) {
   registerComponents[componentName] = type;
 };
 
