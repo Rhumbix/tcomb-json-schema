@@ -231,36 +231,52 @@ transform.resetTypes = function resetTypes() {
   registerTypes = {};
 };
 
-function getFormOptions(permission, options, fields, properties, template) {
-  const newOptions = []
+function addPermissions(permissions, key, type) {
+  return permissions[key] && permissions[key][type] !== undefined ? permissions[key][type] : permissions[type]
+}
+
+function getFormOptions(properties, fieldsData = {}, permissions, newOptions = {}, first = false) {
   Object.entries(properties).forEach((data) => {
       const [key, value] = data
-      newOptions[key] = {
-          fields: [],
-          order: fields[key].order
-      }
-      Object.keys(value.properties).forEach((subKey) => {
-          newOptions[key].fields[subKey] = fields[key].fields[subKey] ? fields[key].fields[subKey] : {}
-          // Add editable and viewable flags
-          // If flags don't exist, then get flags from parent
-          newOptions[key].fields[subKey].editable = permission.field[key][subKey]
-              && permission.field[key][subKey].editable !== undefined ? permission.field[key][subKey].editable : permission.field.editable
-          newOptions[key].fields[subKey].viewable = permission.field[key][subKey]
-              && permission.field[key][subKey].viewable !== undefined ? permission.field[key][subKey].viewable : permission.field.viewable
-          // If field doesn't exist or doesn't have ui:component (template) or
-          // ui:component is auto-fill then add textbox tempate     
-          if (!fields[key].fields[subKey] ||
-            (!fields[key].fields[subKey]["ui:component"] || fields[key].fields[subKey]["ui:component"].includes('auto-fill'))) {
-              newOptions[key].fields[subKey]['factory'] = template
+      if (first) {
+          newOptions[key] = {
+              fields: [],
+              order: fieldsData[key] ? fieldsData[key].order : []
           }
-      })
-  })
-  return {
-      ...options,
-      fields: {
-          ...newOptions
+      } else {
+          // If field doesn't exist, create it
+          if (!fieldsData[key]) {
+              fieldsData[key] = {}
+          }
+          if (!fieldsData[key]["ui:component"] || fieldsData[key]["ui:component"].includes('auto-fill')) {
+              fieldsData[key]["ui:component"] = 'string'
+          }
+          newOptions[key] = {
+              ...fieldsData[key]
+          }
       }
-  }
+      // Add permissions
+      newOptions[key] = {
+          ...newOptions[key],
+          editable: addPermissions(permissions, key, 'editable'),
+          viewable: addPermissions(permissions, key, 'viewable')
+      }
+      if (value.properties || (value.items && value.items.properties)) {
+          const prop = value.items && value.items.properties ? value.items.properties : value.properties
+          const opt = newOptions[key].fields ? newOptions[key].fields : newOptions[key]
+          let fields = {}
+          if (fieldsData[key]) {
+              fields = fieldsData[key].fields ? fieldsData[key].fields : fieldsData[key]
+          }
+          const newPermissions = {
+              ...permissions[key],
+              editable: addPermissions(permissions, key, 'editable'),
+              viewable: addPermissions(permissions, key, 'viewable')
+          }
+          getFormOptions(prop, fields, newPermissions, opt)
+      }
+  })
+  return newOptions
 }
 
 module.exports = {
