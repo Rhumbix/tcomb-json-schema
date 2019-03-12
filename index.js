@@ -273,7 +273,7 @@ function getFormOptions(properties, fieldsData = {}, permissions, newOptions = {
               editable: addPermissions(permissions, key, 'editable'),
               viewable: addPermissions(permissions, key, 'viewable')
           }
-          getFormOptions(prop, fields, newPermissions, opt)
+          return getFormOptions(prop, fields, newPermissions, opt)
       }
   })
   return newOptions
