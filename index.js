@@ -14,11 +14,18 @@ var types = {
 
     string: function (s) {
     if (s.hasOwnProperty('enum')) {
+      // Special case where we pass in 'enum' as a custom component
+      // to override the base enum
+      if (registerComponents.hasOwnProperty('enum')){
+        return registerComponents['enum'](s['enum'])
+      }
+      else{
         if (t.Array.is(s['enum'])) {
-        return t.enums.of(s['enum']);
+          return t.enums.of(s['enum']);
         } else {
-        return t.enums(s['enum']);
+          return t.enums(s['enum']);
         }
+      }
     }
     var predicate;
     if (s.hasOwnProperty('minLength')) {
@@ -41,7 +48,7 @@ var types = {
     }
     // Use custom string type if it exists
     if(registerTypes.hasOwnProperty('string')){
-        return predicate ? t.subtype(s, registerTypes['string']) : registerTypes['string'];
+      return predicate ? t.subtype(registerTypes['string'], predicate) : registerTypes['string'];
     }else{
         return predicate ? t.subtype(t.String, predicate) : t.String;
     }
