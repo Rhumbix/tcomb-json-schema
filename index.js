@@ -17,7 +17,7 @@ var types = {
       // Special case where we pass in 'enum' as a custom component
       // to override the base enum
       if (registerComponents.hasOwnProperty('enum')){
-        return registerComponents['enum'](s['enum'])
+        return registerComponents['enum'](s['enum']);
       }
       else{
         if (t.Array.is(s['enum'])) {
@@ -150,7 +150,7 @@ var types = {
   },
 
   customArray: function (s, ui) {
-    var type = registerComponents['table'] //t.Array;
+    var type = registerComponents['table']; //t.Array;
     if (s.hasOwnProperty('items')) {
       var items = s.items;
       if (t.Object.is(items)) {
@@ -179,11 +179,11 @@ var registerTypes = {};
 var registerComponents = {};
 
 function transform(s, ui) {
-  ui = ui || {}
+  ui = ui || {};
   t.assert(t.Object.is(s));
   // Checking for ui:component within s as opposed to just ui, is kept for backwards compatability.
   if(ui.hasOwnProperty('ui:component') || s.hasOwnProperty('ui:component')){
-    var uiType = ui.hasOwnProperty('ui:component') ? ui['ui:component'] : s['ui:component']
+    var uiType = ui.hasOwnProperty('ui:component') ? ui['ui:component'] : s['ui:component'];
     if(registerComponents.hasOwnProperty(uiType)){
       if(uiType === 'table'){
         return types['customArray'](s, ui);
@@ -239,51 +239,51 @@ transform.resetTypes = function resetTypes() {
 };
 
 function addPermissions(permissions, key, type) {
-  return permissions[key] && permissions[key][type] !== undefined ? permissions[key][type] : permissions[type]
+  return permissions[key] && permissions[key][type] !== undefined ? permissions[key][type] : permissions[type];
 }
 
 function getFormOptions(properties, fieldsData = {}, permissions, newOptions = {}, first = false) {
   Object.entries(properties).forEach((data) => {
-      const [key, value] = data
+      const [key, value] = data;
       if (first) {
           newOptions[key] = {
               fields: [],
               order: fieldsData[key] ? fieldsData[key].order : []
-          }
+          };
       } else {
           // If field doesn't exist, create it
           if (!fieldsData[key]) {
-              fieldsData[key] = {}
+              fieldsData[key] = {};
           }
           if (!fieldsData[key]["ui:component"] || fieldsData[key]["ui:component"].includes('auto-fill')) {
-              fieldsData[key]["ui:component"] = 'string'
+              fieldsData[key]["ui:component"] = 'string';
           }
           newOptions[key] = {
               ...fieldsData[key]
-          }
+          };
       }
       // Add permissions
       newOptions[key] = {
           ...newOptions[key],
           editable: addPermissions(permissions, key, 'editable'),
           viewable: addPermissions(permissions, key, 'viewable')
-      }
+      };
       if (value.properties || (value.items && value.items.properties)) {
-          const prop = value.items && value.items.properties ? value.items.properties : value.properties
-          const opt = newOptions[key].fields ? newOptions[key].fields : newOptions[key]
-          let fields = {}
+          const prop = value.items && value.items.properties ? value.items.properties : value.properties;
+          const opt = newOptions[key].fields ? newOptions[key].fields : newOptions[key];
+          let fields = {};
           if (fieldsData[key]) {
-              fields = fieldsData[key].fields ? fieldsData[key].fields : fieldsData[key]
+              fields = fieldsData[key].fields ? fieldsData[key].fields : fieldsData[key];
           }
           const newPermissions = {
               ...permissions[key],
               editable: addPermissions(permissions, key, 'editable'),
               viewable: addPermissions(permissions, key, 'viewable')
-          }
-          return getFormOptions(prop, fields, newPermissions, opt)
+          };
+          return getFormOptions(prop, fields, newPermissions, opt);
       }
-  })
-  return newOptions
+  });
+  return newOptions;
 }
 
 module.exports = {

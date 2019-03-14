@@ -1,7 +1,7 @@
 "use strict";
 var assert = require('assert');
 var t = require('tcomb');
-var transform = require('../index');
+var { transform, getFormOptions } = require('../index');
 var util = require('../util');
 
 var Str = t.Str;
@@ -484,4 +484,166 @@ describe('transform', function () {
 
   });
 
+});
+
+const recursivelyIterateProperties = (jsonObject, hasFlags = []) => {
+  Object.values(jsonObject).forEach((value) => {
+      if (value.fields || value.properties || (value.items && value.items.properties)) {
+          let prop;
+          if (value.fields) {
+              prop = value.fields;
+          } else {
+              prop = value.items && value.items.properties ? value.items.properties : value.properties;
+          }
+          return recursivelyIterateProperties(prop, hasFlags);
+      } else {
+          hasFlags.push((value.editable === true || value.editable === false) && (value.viewable === true || value.viewable == false));
+      }
+  });
+  return hasFlags;
+}
+
+// Check if all fields and subfields have viewable and editable flags set
+const checkFlags = (object) => {
+  const hasFlags = recursivelyIterateProperties(object);
+  return hasFlags.every((flag) => flag === true)
+}
+
+const permissions = {
+  "editable": true,
+  "viewable": true,
+  "Subcontractor Use": {
+      "Lower Tier Sub": {"editable": false},
+      "Description of Work": {"editable": false},
+      "Equipment": {"editable": false},
+      "Project Name": {"editable": false},
+      "Material": {"editable": false},
+      "Subcontractor's Job #": {"editable": false},
+      "labor": {"editable": false},
+      "subcontractor's signature": {"editable": false},
+      "Location": {"editable": false},
+      "Work Performed On": {"editable": false},
+      "Tag Created On": {"editable": false}
+  }
+};
+
+const fields = {
+  "Subcontractor Use":{
+    "fields": {
+      "Comment": {"hidden": true, "ui:component": "comment", "date": {}, "comment": {}, "commenter": {}},
+      "Description of Work": {"ui:component": "textarea"},
+      "Equipment": {"item": {}, "ui:component": "table", "ui:custom-table": {}, "ui:multi-select": "equipment", "ui:summary_view": {}},
+      "Equipment comment": {"hidden": "true", "ui:component": "comment", "date": {}, "comment": {}, "commenter": {}},
+      "GC's Reference #": {"editable": true},
+      "Labor comment": {"hidden": "true", "ui:component": "comment", "date": {}, "comment": {}, "commenter": {}},
+      "Lower Tier Sub": {"item": {}, "ui:component": "table", "ui:summary_view": {}, "note": {}, "material": {}},
+      "Material comment": {"hidden": "true", "ui:component": "comment", "date": {}, "comment": {}, "commenter": {}},
+      "Tag Created On": {"editable": true, "ui:component": "date"},
+      "Work Performed On": {"ui:component": "date"},
+      "labor": {"item": {}, "ui:component": "table", "ui:custom-table": {}, "ui:multi-select": "employee", "ui:summary_view": {}},
+      "subcontractor's signature": {"order": [], "ui:component": "signature-advanced", "date": {}, "name": {}, "signature": {}}
+    },
+    "order": ["Tag Created On",
+        "Work Performed On",
+        "Project Name",
+        "Location",
+        "GC's Reference #",
+        "Subcontractor's Job #",
+        "Owners/Rep #",
+        "Status",
+        "Description of Work",
+        "Photos",
+        "Comment",
+        "labor",
+        "Labor comment",
+        "Equipment",
+        "Equipment comment",
+        "Material",
+        "Material comment",
+        "Lower Tier Sub",
+        "Additional Notes",
+        "subcontractor's signature"]
+}};
+
+describe('Test function getFormOptions', () => {
+  it('Test with a nested object', () => {
+    const properties = {
+      "Subcontractor Use": {
+        "properties": {
+          "Additional Notes": {"type": "string"},
+          "Comment": {"type": "object", "properties": {
+            "comment": {"type": "string"},
+            "commenter": {"type": "string"},
+            "date": {"type": "string"}
+          }},
+          "Description of Work": {"type": "string"},
+          "Equipment": {"type": "array", "items": {
+            "properties": {
+              "equipment": {"type": "object", "properties": {
+                "caltrans_id": {"type": "string"},
+                "category": {"type": "string"},
+                "description": {"type": "string"},
+                "equipment_id": {"type": "string"},
+                "id": {"type": "integer"},
+                "idle_time_price": {"type": "integer"},
+                "over_time_price": {"type": "integer"},
+                "running_time_price": {"type": "integer"},
+                "status": {"type": "string"}
+              }},
+              "hours": {"type": "object"},
+              "note": {"type": "string"},
+              "quantity": {"type": "number"}
+            }
+          }},
+          "Equipment comment": {"type": "object"},
+          "GC's Reference #": {"type": "string"},
+          "Labor comment": {"type": "object"},
+          "Location": {"type": "string"},
+          "Lower Tier Sub": {"type": "array"},
+          "Material": {"type": "array"},
+          "Material comment": {"type": "object"},
+          "Owners/Rep #": {"type": "string"},
+          "Project Name": {"type": "string"},
+          "Status": {"type": "string"},
+          "Subcontractor's Job #": {"type": "string"},
+          "Tag Created On": {"type": "string"},
+          "Work Performed On": {"type": "string"},
+          "labor": {"type": "array"},
+          "subcontractor's signature": {"type": "object"}
+        }
+      }
+    };
+    const object = getFormOptions(properties, fields, permissions, {}, true);
+    ok(checkFlags(object) === true);
+    ok(Object.keys(object).length > 0);
+  });
+
+  it('Test with a small object', () => {
+    const properties = {
+      "properties": {
+        "Hours": {
+          "type": "object",
+          "properties": {
+            "st": {
+              "type": "number"
+            },
+            "overtime hours": {
+              "type": "object",
+              "properties": {
+                "ot": {
+                  "type": "number"
+                },
+                "pot": {
+                  "type": "number"
+                }
+              }
+            }
+          }
+        }
+      }
+    };
+    const object = getFormOptions(properties, fields, permissions, {}, true);
+    ok(checkFlags(object) === true);
+    ok(Object.keys(object).length > 0);
+  });
 });
