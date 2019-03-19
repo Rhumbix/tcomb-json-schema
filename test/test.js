@@ -608,8 +608,39 @@ describe('Test function getFormOptions', () => {
           "Subcontractor's Job #": {"type": "string"},
           "Tag Created On": {"type": "string"},
           "Work Performed On": {"type": "string"},
-          "labor": {"type": "array"},
-          "subcontractor's signature": {"type": "object"}
+          "labor": {
+            "type": "array",
+            "require": ["employee"],
+            "items": {
+              "type": "object",
+              "properties": {
+                "note": {"type": "string"},
+                "hours": {"type": "object", "properties": {"dt": {"type": "number"}, "ot": {"type": "number"}, "st": {"type": "number"}}},
+                "external subcontractor": {"type": "boolean"},
+                "employee": {
+                  "type": "object",
+                  "properties": {
+                    "first_name": {"type": "string"},
+                    "last_name": {"type": "string"},
+                    "user_id": {"type": "integer"},
+                    "company_supplied_id": {"type": "string"},
+                    "classification": {"type": "string"},
+                    "is_active": {"type": "boolean"},
+                    "company": {"type": "integer"},
+                    "fullsize": {"type": "string"},
+                    "thumbnail": {"type": "string"},
+                    "trade": {"type": "string"},
+                    "phone": {"type": "string"},
+                    "email": {"type": "string"},
+                    "user_role": {"type": "string"},
+                    "id": {"type": "integer"},
+                    "employee_id": {"type": "integer"},
+                  },
+                },
+              },
+            },
+          },
+        "subcontractor's signature": {"type": "object"}
         }
       }
     };
