@@ -242,45 +242,44 @@ function addPermissions(permissions, key, type) {
   return permissions[key] && permissions[key][type] !== undefined ? permissions[key][type] : permissions[type]
 }
 
-function getFormOptions(properties, fieldsData = {}, permissions, newOptions = {}, first = false) {
-  Object.entries(properties).forEach((data) => {
+function getFormOptions(schema, fieldsData = {}, permissions) {
+  const newOptions = {}
+  Object.entries(schema.properties).forEach((data) => {
       const [key, value] = data
-      if (first) {
-          newOptions[key] = {
-              fields: [],
-              order: fieldsData[key] ? fieldsData[key].order : []
-          }
-      } else {
-          // If field doesn't exist, create it
-          if (!fieldsData[key]) {
-              fieldsData[key] = {}
-          }
-          if (!fieldsData[key]["ui:component"] || fieldsData[key]["ui:component"].includes('auto-fill')) {
-              fieldsData[key]["ui:component"] = 'string'
-          }
-          newOptions[key] = {
-              ...fieldsData[key]
-          }
+      // If field doesn't exist, create it
+      if (!fieldsData[key]) {
+          fieldsData[key] = {}
       }
       // Add permissions
       newOptions[key] = {
-          ...newOptions[key],
-          editable: addPermissions(permissions, key, 'editable'),
-          viewable: addPermissions(permissions, key, 'viewable')
+          ...fieldsData[key],
+          editable: this.addPermissions(permissions, key, 'editable'),
+          viewable: this.addPermissions(permissions, key, 'viewable')
       }
       if (value.properties || (value.items && value.items.properties)) {
-          const prop = value.items && value.items.properties ? value.items.properties : value.properties
-          const opt = newOptions[key].fields ? newOptions[key].fields : newOptions[key]
-          let fields = {}
+          const newProperties =  value.items && value.items.properties ? value.items : value
+          let newFields = {}
           if (fieldsData[key]) {
-              fields = fieldsData[key].fields ? fieldsData[key].fields : fieldsData[key]
+              newFields = fieldsData[key].item ? fieldsData[key].item.fields : fieldsData[key].fields ? fieldsData[key].fields : fieldsData[key]
           }
           const newPermissions = {
               ...permissions[key],
-              editable: addPermissions(permissions, key, 'editable'),
-              viewable: addPermissions(permissions, key, 'viewable')
+              editable: this.addPermissions(permissions, key, 'editable'),
+              viewable: this.addPermissions(permissions, key, 'viewable')
           }
-          return getFormOptions(prop, fields, newPermissions, opt)
+          const fields = this.getFormOptions(newProperties, newFields, newPermissions)
+          if (value.properties) {
+              newOptions[key] = {
+                  ...newOptions[key],
+                  fields,
+                  "order": fieldsData[key] && fieldsData[key].order ? fieldsData[key].order : []
+              }
+          } else {
+              newOptions[key]['item'] = {
+                  fields,
+                  "order": fieldsData[key].item && fieldsData[key].item.order ? fieldsData[key].item.order : []
+              }
+          }
       }
   })
   return newOptions
