@@ -489,23 +489,23 @@ describe('transform', function () {
 const recursivelyIterateProperties = (jsonObject, hasFlags = []) => {
   Object.values(jsonObject).forEach((value) => {
       if (value.fields || value.properties || (value.items && value.items.properties)) {
-          let prop;
+          let prop
           if (value.fields) {
-              prop = value.fields;
+              prop = value.fields
           } else {
-              prop = value.items && value.items.properties ? value.items.properties : value.properties;
+              prop = value.items && value.items.properties ? value.items.properties : value.properties
           }
-          return recursivelyIterateProperties(prop, hasFlags);
+          return recursivelyIterateProperties(prop, hasFlags)
       } else {
-          hasFlags.push((value.editable === true || value.editable === false) && (value.viewable === true || value.viewable == false));
+          hasFlags.push((value.editable === true || value.editable === false) && (value.viewable === true || value.viewable == false))
       }
-  });
-  return hasFlags;
+  })
+  return hasFlags
 }
 
 // Check if all fields and subfields have viewable and editable flags set
 const checkFlags = (object) => {
-  const hasFlags = recursivelyIterateProperties(object);
+  const hasFlags = recursivelyIterateProperties(object)
   return hasFlags.every((flag) => flag === true)
 }
 
@@ -525,7 +525,7 @@ const permissions = {
       "Work Performed On": {"editable": false},
       "Tag Created On": {"editable": false}
   }
-};
+}
 
 const fields = {
   "Subcontractor Use":{
@@ -563,90 +563,92 @@ const fields = {
         "Lower Tier Sub",
         "Additional Notes",
         "subcontractor's signature"]
-}};
+}}
 
 describe('Test function getFormOptions', () => {
   it('Test with a nested object', () => {
     const properties = {
-      "Subcontractor Use": {
-        "properties": {
-          "Additional Notes": {"type": "string"},
-          "Comment": {"type": "object", "properties": {
-            "comment": {"type": "string"},
-            "commenter": {"type": "string"},
-            "date": {"type": "string"}
-          }},
-          "Description of Work": {"type": "string"},
-          "Equipment": {"type": "array", "items": {
-            "properties": {
-              "equipment": {"type": "object", "properties": {
-                "caltrans_id": {"type": "string"},
-                "category": {"type": "string"},
-                "description": {"type": "string"},
-                "equipment_id": {"type": "string"},
-                "id": {"type": "integer"},
-                "idle_time_price": {"type": "integer"},
-                "over_time_price": {"type": "integer"},
-                "running_time_price": {"type": "integer"},
-                "status": {"type": "string"}
-              }},
-              "hours": {"type": "object"},
-              "note": {"type": "string"},
-              "quantity": {"type": "number"}
-            }
-          }},
-          "Equipment comment": {"type": "object"},
-          "GC's Reference #": {"type": "string"},
-          "Labor comment": {"type": "object"},
-          "Location": {"type": "string"},
-          "Lower Tier Sub": {"type": "array"},
-          "Material": {"type": "array"},
-          "Material comment": {"type": "object"},
-          "Owners/Rep #": {"type": "string"},
-          "Project Name": {"type": "string"},
-          "Status": {"type": "string"},
-          "Subcontractor's Job #": {"type": "string"},
-          "Tag Created On": {"type": "string"},
-          "Work Performed On": {"type": "string"},
-          "labor": {
-            "type": "array",
-            "require": ["employee"],
-            "items": {
-              "type": "object",
+      "properties": {
+        "Subcontractor Use": {
+          "properties": {
+            "Additional Notes": {"type": "string"},
+            "Comment": {"type": "object", "properties": {
+              "comment": {"type": "string"},
+              "commenter": {"type": "string"},
+              "date": {"type": "string"}
+            }},
+            "Description of Work": {"type": "string"},
+            "Equipment": {"type": "array", "items": {
               "properties": {
+                "equipment": {"type": "object", "properties": {
+                  "caltrans_id": {"type": "string"},
+                  "category": {"type": "string"},
+                  "description": {"type": "string"},
+                  "equipment_id": {"type": "string"},
+                  "id": {"type": "integer"},
+                  "idle_time_price": {"type": "integer"},
+                  "over_time_price": {"type": "integer"},
+                  "running_time_price": {"type": "integer"},
+                  "status": {"type": "string"}
+                }},
+                "hours": {"type": "object"},
                 "note": {"type": "string"},
-                "hours": {"type": "object", "properties": {"dt": {"type": "number"}, "ot": {"type": "number"}, "st": {"type": "number"}}},
-                "external subcontractor": {"type": "boolean"},
-                "employee": {
-                  "type": "object",
-                  "properties": {
-                    "first_name": {"type": "string"},
-                    "last_name": {"type": "string"},
-                    "user_id": {"type": "integer"},
-                    "company_supplied_id": {"type": "string"},
-                    "classification": {"type": "string"},
-                    "is_active": {"type": "boolean"},
-                    "company": {"type": "integer"},
-                    "fullsize": {"type": "string"},
-                    "thumbnail": {"type": "string"},
-                    "trade": {"type": "string"},
-                    "phone": {"type": "string"},
-                    "email": {"type": "string"},
-                    "user_role": {"type": "string"},
-                    "id": {"type": "integer"},
-                    "employee_id": {"type": "integer"},
+                "quantity": {"type": "number"}
+              }
+            }},
+            "Equipment comment": {"type": "object"},
+            "GC's Reference #": {"type": "string"},
+            "Labor comment": {"type": "object"},
+            "Location": {"type": "string"},
+            "Lower Tier Sub": {"type": "array"},
+            "Material": {"type": "array"},
+            "Material comment": {"type": "object"},
+            "Owners/Rep #": {"type": "string"},
+            "Project Name": {"type": "string"},
+            "Status": {"type": "string"},
+            "Subcontractor's Job #": {"type": "string"},
+            "Tag Created On": {"type": "string"},
+            "Work Performed On": {"type": "string"},
+            "labor": {
+              "type": "array",
+              "require": ["employee"],
+              "items": {
+                "type": "object",
+                "properties": {
+                  "note": {"type": "string"},
+                  "hours": {"type": "object", "properties": {"dt": {"type": "number"}, "ot": {"type": "number"}, "st": {"type": "number"}}},
+                  "external subcontractor": {"type": "boolean"},
+                  "employee": {
+                    "type": "object",
+                    "properties": {
+                      "first_name": {"type": "string"},
+                      "last_name": {"type": "string"},
+                      "user_id": {"type": "integer"},
+                      "company_supplied_id": {"type": "string"},
+                      "classification": {"type": "string"},
+                      "is_active": {"type": "boolean"},
+                      "company": {"type": "integer"},
+                      "fullsize": {"type": "string"},
+                      "thumbnail": {"type": "string"},
+                      "trade": {"type": "string"},
+                      "phone": {"type": "string"},
+                      "email": {"type": "string"},
+                      "user_role": {"type": "string"},
+                      "id": {"type": "integer"},
+                      "employee_id": {"type": "integer"},
+                    },
                   },
                 },
               },
             },
-          },
-        "subcontractor's signature": {"type": "object"}
+          "subcontractor's signature": {"type": "object"}
+          }
         }
       }
-    };
-    const object = getFormOptions(properties, fields, permissions, {}, true);
-    ok(checkFlags(object) === true);
-    ok(Object.keys(object).length > 0);
+    }
+    const object = getFormOptions(properties, fields, permissions)
+    ok(checkFlags(object) === true)
+    ok(Object.keys(object).length > 0)
   });
 
   it('Test with a small object', () => {
@@ -672,9 +674,9 @@ describe('Test function getFormOptions', () => {
           }
         }
       }
-    };
-    const object = getFormOptions(properties, fields, permissions, {}, true);
-    ok(checkFlags(object) === true);
-    ok(Object.keys(object).length > 0);
-  });
-});
+    }
+    const object = getFormOptions(properties, fields, permissions)
+    ok(checkFlags(object) === true)
+    ok(Object.keys(object).length > 0)
+  })
+})
