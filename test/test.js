@@ -488,12 +488,12 @@ describe('transform', function () {
 
 const recursivelyIterateProperties = (jsonObject, hasFlags = []) => {
   Object.values(jsonObject).forEach((value) => {
-      if (value.fields || value.properties || (value.items && value.items.properties)) {
+      if (value.fields || value.properties || (value.item && value.item.properties)) {
           let prop
           if (value.fields) {
               prop = value.fields
           } else {
-              prop = value.items && value.items.properties ? value.items.properties : value.properties
+              prop = value.item && value.item.properties ? value.item.properties : value.properties
           }
           return recursivelyIterateProperties(prop, hasFlags)
       } else {
@@ -509,21 +509,101 @@ const checkFlags = (object) => {
   return hasFlags.every((flag) => flag === true)
 }
 
+const checkPermissions = (object, expectedOptions, keys = []) => {
+  Object.entries(object).forEach((data) => {
+    const [key, value] = data
+    if (expectedOptions && expectedOptions[key]) {
+      keys[key] = {
+          "editable": expectedOptions[key].editable === value.editable,
+          "viewable": expectedOptions[key].viewable === value.viewable
+        }
+    }
+    if ((value.fields || value.item)) {
+        if (expectedOptions && expectedOptions[key] && (expectedOptions[key].fields || expectedOptions[key].item)) {
+          const newField = value.item ? value.item.fields : value.fields
+          const newExpected = expectedOptions[key].item ? expectedOptions[key].item.fields : expectedOptions[key].fields
+          checkPermissions(newField, newExpected, keys)
+        }
+    }
+  })
+  return keys
+}
+
+const checkData = (data) => {
+  let response = true
+  Object.values(data).forEach((value) => {
+    if (value.editabe === false || value.viewable === false) {
+      response = false
+    }
+  })
+  return response
+}
+
 const permissions = {
   "editable": true,
   "viewable": true,
   "Subcontractor Use": {
-      "Lower Tier Sub": {"editable": false},
-      "Description of Work": {"editable": false},
-      "Equipment": {"editable": false},
-      "Project Name": {"editable": false},
-      "Material": {"editable": false},
-      "Subcontractor's Job #": {"editable": false},
-      "labor": {"editable": false},
-      "subcontractor's signature": {"editable": false},
-      "Location": {"editable": false},
-      "Work Performed On": {"editable": false},
-      "Tag Created On": {"editable": false}
+    "Comment": {"editable": false, "viewable": false},
+    "Lower Tier Sub": {"editable": false},
+    "Description of Work": {"editable": false},
+    "Equipment": {"editable": false},
+    "Project Name": {"editable": false},
+    "Material": {"editable": false},
+    "Subcontractor's Job #": {"editable": false},
+    "labor": {"editable": false},
+    "subcontractor's signature": {"editable": false},
+    "Location": {"editable": false},
+    "Work Performed On": {"editable": false},
+    "Tag Created On": {"editable": false}
+  }
+}
+
+const expectedOptions = {
+  "Subcontractor Use": {
+    "fields": {
+      "Comment": {
+        "editable": false,
+        "viewable": false,
+        "fields": {
+          "date": {
+            "editable": false,
+            "viewable": false
+          }
+        }
+      },
+      "Location": {
+        "editable": false,
+        "viewable": true
+      },
+      "Status": {
+        "editable": true,
+        "viewable": true
+      },
+      "labor": {
+        "editable": false,
+        "viewable": true,
+        "item": {
+          "fields": {
+            "note": {
+              "editable": false,
+              "viewable": true
+            },
+            "hours": {
+              "editable": false,
+              "viewable": true,
+              "fields": {
+                "dt": {
+                  "editable": false,
+                  "viewable": true
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "editable": true,
+    "viewable": true
   }
 }
 
@@ -568,8 +648,10 @@ const fields = {
 describe('Test function getFormOptions', () => {
   it('Test with a nested object', () => {
     const properties = {
+      "type": "object",
       "properties": {
         "Subcontractor Use": {
+          "type": "object",
           "properties": {
             "Additional Notes": {"type": "string"},
             "Comment": {"type": "object", "properties": {
@@ -591,18 +673,12 @@ describe('Test function getFormOptions', () => {
                   "running_time_price": {"type": "integer"},
                   "status": {"type": "string"}
                 }},
-                "hours": {"type": "object"},
                 "note": {"type": "string"},
                 "quantity": {"type": "number"}
               }
             }},
-            "Equipment comment": {"type": "object"},
             "GC's Reference #": {"type": "string"},
-            "Labor comment": {"type": "object"},
             "Location": {"type": "string"},
-            "Lower Tier Sub": {"type": "array"},
-            "Material": {"type": "array"},
-            "Material comment": {"type": "object"},
             "Owners/Rep #": {"type": "string"},
             "Project Name": {"type": "string"},
             "Status": {"type": "string"},
@@ -640,14 +716,16 @@ describe('Test function getFormOptions', () => {
                   },
                 },
               },
-            },
-          "subcontractor's signature": {"type": "object"}
+            }
           }
         }
       }
     }
     const object = getFormOptions(properties, fields, permissions)
+    const data = checkPermissions(object, expectedOptions)
+
     ok(checkFlags(object) === true)
+    ok(checkData(data) === true)
     ok(Object.keys(object).length > 0)
   });
 

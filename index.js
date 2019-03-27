@@ -256,8 +256,9 @@ function getFormOptions(schema, fieldsData = {}, permissions) {
           editable: addPermissions(permissions, key, 'editable'),
           viewable: addPermissions(permissions, key, 'viewable')
       }
-      if (value.properties || (value.items && value.items.properties)) {
-          const newProperties =  value.items && value.items.properties ? value.items : value
+      const type = value.type
+      if (type === 'object' || type === 'array') {
+          const newProperties = type === 'array' ? value.items : value
           let newFields = {}
           if (fieldsData[key]) {
               newFields = fieldsData[key].item ? fieldsData[key].item.fields : fieldsData[key].fields ? fieldsData[key].fields : fieldsData[key]
@@ -268,7 +269,7 @@ function getFormOptions(schema, fieldsData = {}, permissions) {
               viewable: addPermissions(permissions, key, 'viewable')
           }
           const fields = getFormOptions(newProperties, newFields, newPermissions)
-          if (value.properties) {
+          if (type === 'object') {
               newOptions[key] = {
                   ...newOptions[key],
                   fields,
