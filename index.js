@@ -88,6 +88,10 @@ var types = {
   },
 
   boolean: function () {
+    // Add custom checkbox
+    if (registerComponents.hasOwnProperty('checkbox')){
+      return registerComponents['checkbox']
+    }
     return t.Boolean
   },
 
