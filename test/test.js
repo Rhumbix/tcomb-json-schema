@@ -52,7 +52,7 @@ describe('transform', function () {
       eq(getKind(Type), 'enums');
       eq(Type.is('a'), false);
       eq(Type.is('st'), true);
-    });    
+    });
 
     it('should handle minLength', function () {
       var Type = transform({
@@ -96,7 +96,7 @@ describe('transform', function () {
       eq(Type.meta.type, Str);
       eq(Type.meta.predicate('hello'), true);
       eq(Type.meta.predicate('aaa'), false);
-    });    
+    });
 
   });
 
@@ -457,20 +457,6 @@ describe('transform', function () {
         }
       );
     });
-
-    it('should throw if a reserved type is register', function () {
-      assert.throws(
-        function () {
-          transform.registerType('string', Str10);
-        },
-        function(err) {
-          if ( (err instanceof Error) && err.message === '[tcomb] [tcomb-json-schema] Reserved type string') {
-            return true;
-          }
-        }
-      );
-    });
-
 
     it('should handle type property', function () {
       var Type = transform({
