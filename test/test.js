@@ -1,4 +1,5 @@
 "use strict";
+const diff = require('deep-object-diff').diff
 var assert = require('assert');
 var t = require('tcomb');
 var { transform, getFormOptions } = require('../index');
@@ -632,6 +633,39 @@ const fields = {
 }}
 
 describe('Test function getFormOptions', () => {
+  it('expected output for T&M should match what is returned from getFormOptions', () => {
+    const { schemaInput, uiSchemaInput, uiSchemaOutput } = require('./mock-schema');
+    const fieldPermissions = {
+            "viewable": true,
+            "editable": true,
+            "properties": {
+              "Subcontractor Use": {
+                "properties": {
+                  "Comment": {
+                    "viewable": false,
+                    "editable": false
+                  },
+                  "Labor comment": {
+                    "viewable": false,
+                    "editable": false
+                  },
+                  "Tag Created On": {
+                    "editable": false
+                  },
+                  "Material comment": {
+                    "viewable": false,
+                    "editable": false
+                  },
+                  "Equipment comment": {
+                    "viewable": false,
+                    "editable": false
+                  }
+                }
+              }
+            }
+          }
+    eq(diff(uiSchemaOutput, getFormOptions(schemaInput, uiSchemaInput, fieldPermissions)), {})
+  })
   it('Test with a nested object', () => {
     const properties = {
       "type": "object",
