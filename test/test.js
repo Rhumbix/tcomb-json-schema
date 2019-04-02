@@ -666,6 +666,7 @@ describe('Test function getFormOptions', () => {
           }
     eq(diff(uiSchemaOutput, getFormOptions(schemaInput, uiSchemaInput, fieldPermissions)), {})
   })
+
   it('Test with a nested object', () => {
     const properties = {
       "type": "object",

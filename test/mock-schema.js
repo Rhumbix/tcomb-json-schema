@@ -953,19 +953,7 @@ const uiSchemaOutput = {
                     "viewable": true,
                     "editable": true
                   },
-                  "dt_price": {
-                    "viewable": true,
-                    "editable": true
-                  },
                   "fullsize": {
-                    "viewable": true,
-                    "editable": true
-                  },
-                  "ot_price": {
-                    "viewable": true,
-                    "editable": true
-                  },
-                  "st_price": {
                     "viewable": true,
                     "editable": true
                   },
@@ -974,14 +962,6 @@ const uiSchemaOutput = {
                     "editable": true
                   },
                   "last_name": {
-                    "viewable": true,
-                    "editable": true
-                  },
-                  "pdt_price": {
-                    "viewable": true,
-                    "editable": true
-                  },
-                  "pot_price": {
                     "viewable": true,
                     "editable": true
                   },
@@ -1008,7 +988,7 @@ const uiSchemaOutput = {
                   "company_supplied_id": {
                     "viewable": true,
                     "editable": true
-                  }
+                  },
                   "dt_price": {
                     "viewable": true,
                     "editable": true,
@@ -1186,10 +1166,6 @@ const uiSchemaOutput = {
                     "viewable": true,
                     "editable": true
                   },
-                  "unit_price": {
-                    "viewable": true,
-                    "editable": true
-                  },
                   "description": {
                     "viewable": true,
                     "editable": true
@@ -1197,7 +1173,7 @@ const uiSchemaOutput = {
                   "part_number": {
                     "viewable": true,
                     "editable": true
-                  }
+                  },
                   "unit_price": {
                     "viewable": true,
                     "editable": true,
@@ -1476,6 +1452,7 @@ const uiSchemaOutput = {
               "company name": {
                 "viewable": true,
                 "editable": true
+              }
             }
           },
           "ui:component": "table",
