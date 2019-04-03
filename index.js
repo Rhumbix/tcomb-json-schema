@@ -257,13 +257,34 @@ function getFormOptions(schema, ui_schema = {}, permissions = {}, objViewable = 
             {},
             ui_schema,
             {"editable": objEditable,
-            "viewable": objViewable,
-            "fields": Object.keys(schema.properties).reduce(
+             "viewable": objViewable,
+             "fields": Object.keys(schema.properties).reduce(
                 (map, propertyKey) => {
                     const permission = permissions.properties ? permissions.properties[propertyKey] || {} : {}
                     map[propertyKey] = {
                         ...getFormOptions(schema.properties[propertyKey],
                                           ui_schema.fields ? ui_schema.fields[propertyKey] : {},
+                                          permission,
+                                          objViewable,
+                                          objEditable)
+                    }
+                    return map
+                }, {})
+        })
+    }
+
+    else if(schema.type == "array"){
+        return Object.assign(
+            {},
+            ui_schema,
+            {"editable": objEditable,
+             "viewable": objViewable,
+             "item": Object.keys(schema.items).reduce(
+                (map, propertyKey) => {
+                    const permission = permissions.items ? permissions.items[propertyKey] || {} : {}
+                    map[propertyKey] = {
+                        ...getFormOptions(schema.items[propertyKey],
+                                          ui_schema.item ? ui_schema.item[propertyKey] : {},
                                           permission,
                                           objViewable,
                                           objEditable)

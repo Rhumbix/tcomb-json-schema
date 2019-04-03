@@ -759,4 +759,79 @@ describe('getFormOptions', function () {
         assert.deepEqual(new_ui_schema, linear_tracking_ui_schema_output)
     })
 
+    it('type: arrays', function () {
+        const linear_tracking_schema = {
+            "type": "object",
+            "properties": {
+                "labor": {
+                    "type": "array",
+                    "items":{
+                        "Crew Code": {"type": "object"},
+                        "hours":{
+                            "type": "object",
+                            "properties":{
+                                "st": { "type": "integer" },
+                                "ot": { "type": "integer" },
+                                "dt": { "type": "integer" }
+                            }
+                        }
+                    }
+                },
+                "Length": {"type": "number"}
+            }
+        }
+
+        const linear_tracking_ui_schema = {
+            "fields": {
+                "labor": {
+                    "item":{
+                        "Crew Code": {"ui:component": "costcode-selector"}
+                    }
+                },
+                "Length": {"editable": true, "viewable": true},
+
+            }
+        }
+
+        const permissions = {
+            "editable": false,
+            "viewable": false,
+            "properties": {
+                "Length": { "editable": true, "viewable": true },
+                "labor": {
+                    "items":{
+                        "st": { "editable": true, "viewable": true }
+                    }
+                }
+            }
+        }
+
+        const linear_tracking_ui_schema_output = {
+            "editable": false,
+            "viewable": false,
+            "fields": {
+                "labor": {
+                    "editable": false,
+                    "viewable": false,
+                    "item":{
+                        "Crew Code": {"ui:component": "costcode-selector", "editable": false, "viewable": false},
+                        "hours":{
+                            "editable": false,
+                            "viewable": false,
+                            "fields": {
+                                "st": { "viewable": false, "editable": false},
+                                "ot": { "viewable": false, "editable": false},
+                                "dt": { "viewable": false, "editable": false}
+                            }
+                        }
+                    }
+                },
+                "Length": {"editable": false, "viewable": false},
+            }
+        }
+
+        const new_ui_schema = getFormOptions(linear_tracking_schema, linear_tracking_ui_schema, permissions)
+        assert.deepEqual(new_ui_schema, linear_tracking_ui_schema_output)
+    })
+
 })
