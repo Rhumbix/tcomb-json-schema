@@ -238,4 +238,45 @@ transform.resetTypes = function resetTypes() {
     registerTypes = {};
 };
 
-module.exports = transform;
+// Each component in Tcomb is encapsulated and knows nothing about its parent or children, rightfully so.
+// This means we can't and shouldn't dig through to parent Structs to find permissions but rather set every
+// permission for every component here. If there is just a single 'editable/viewable: true' at the top level object,
+// this goes through each field and duplicates those permissions to each.
+
+// If a struct is set to false for either permission no child can override that even if the permission
+// definition does. So a top level editable: false makes the whole document uneditable even if a single
+// field is set to editable: true.
+function getFormOptions(schema, ui_schema, permissions = {}, objViewable = false, objEditable = false){
+    if(schema.type == "object"){
+        objViewable = permissions.viewable || objViewable
+        objEditable = permissions.editable || objEditable
+        if(!schema.properties){
+            return Object.assign({}, {...ui_schema, viewable: objViewable, editable: objEditable})
+        }
+        return Object.assign(
+            {},
+            ui_schema,
+            {fields: Object.keys(schema.properties).reduce(
+                (map, propertyKey) => {
+                    const permission = permissions.properties ? permissions.properties[propertyKey] || {} : {}
+                    map[propertyKey] = {
+                        ...getFormOptions(schema.properties[propertyKey],
+                                          ui_schema.fields[propertyKey],
+                                          permission,
+                                          objViewable,
+                                          objEditable)
+                    }
+            return map
+        }, {})
+    })
+  }
+
+  let viewable = objViewable === false ? false : ('viewable' in permissions ? permissions.viewable : true)
+  let editable = objEditable === false ? false : ('editable' in permissions ? permissions.editable : true)
+  return Object.assign({}, {...ui_schema, editable: editable, viewable: viewable})
+}
+
+module.exports = {
+  transform,
+  getFormOptions
+}

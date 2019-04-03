@@ -9,7 +9,7 @@
   ],
   "scripts": {
     "lint": "eslint index.js",
-    "test": "npm run lint && mocha"
+    "test": "./node_modules/.bin/mocha --watch"
   },
   "repository": {
     "type": "git",
@@ -26,6 +26,7 @@
     "tcomb": "^3.0.0"
   },
   "devDependencies": {
+    "assert-diff": "2.0.3",
     "eslint": "1.10.3",
     "mocha": "2.4.5"
   },
