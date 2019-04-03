@@ -526,6 +526,8 @@ describe('getFormOptions', function () {
         }
 
         const linear_tracking_ui_schema_output = {
+            "editable": true,
+            "viewable": true,
             "fields": {
                 "Date Completed": {"ui:component": "date", "editable": true, "viewable": true},
                 "Crew Code": {"ui:component": "costcode-selector", "editable": true, "viewable": true},
@@ -557,7 +559,7 @@ describe('getFormOptions', function () {
         assert.deepEqual(new_ui_schema, linear_tracking_ui_schema_output)
     })
 
-    it('multiple nesteded structs with varying ui:components, one "editable: false" property; and a optional/missing ui_schema(in the nested struct)', function () {
+    it('multiple nested structs with varying ui:components, one "editable: false" property; and a optional/missing ui_schema(in the nested struct)', function () {
         const linear_tracking_schema = {
             "description": "",
             "type": "object",
@@ -628,12 +630,18 @@ describe('getFormOptions', function () {
         }
 
         const linear_tracking_ui_schema_output = {
+            "editable": true,
+            "viewable": true,
             "fields": {
                 "Date Completed": {"ui:component": "date", "editable": true, "viewable": true},
                 "labor": {
+                    "editable": true,
+                    "viewable": true,
                     "fields":{
                         "Crew Code": {"ui:component": "costcode-selector", "editable": true, "viewable": true},
                         "hours":{
+                            "editable": true,
+                            "viewable": true,
                             "fields": {
                                 "st": { "viewable": true, "editable": true},
                                 "ot": { "viewable": true, "editable": true},
@@ -669,6 +677,81 @@ describe('getFormOptions', function () {
                     "secondary": {"key": "/Note"},
                     "tertiary": {"key": "/Date Completed", "template": "<%= formatDate(value) %>"},
                 }
+            }
+        }
+
+        const new_ui_schema = getFormOptions(linear_tracking_schema, linear_tracking_ui_schema, permissions)
+        assert.deepEqual(new_ui_schema, linear_tracking_ui_schema_output)
+    })
+
+    it('false at the struct level can never be overriden from something within it; multiple nested structs', function () {
+        const linear_tracking_schema = {
+            "type": "object",
+            "properties": {
+                "labor": {
+                    "type": "object",
+                    "properties":{
+                        "Crew Code": {"type": "object"},
+                        "hours":{
+                            "type": "object",
+                            "properties":{
+                                "st": { "type": "integer" },
+                                "ot": { "type": "integer" },
+                                "dt": { "type": "integer" }
+                            }
+                        }
+                    }
+                },
+                "Length": {"type": "number"}
+            }
+        }
+
+        const linear_tracking_ui_schema = {
+            "fields": {
+                "labor": {
+                    "fields":{
+                        "Crew Code": {"ui:component": "costcode-selector"}
+                    }
+                },
+                "Length": {"editable": true, "viewable": true},
+
+            }
+        }
+
+        const permissions = {
+            "editable": false,
+            "viewable": false,
+            "properties": {
+                "Length": { "editable": true, "viewable": true },
+                "labor": {
+                    "properties":{
+                        "st": { "editable": true, "viewable": true }
+                    }
+                }
+            }
+        }
+
+        const linear_tracking_ui_schema_output = {
+            "editable": false,
+            "viewable": false,
+            "fields": {
+                "labor": {
+                    "editable": false,
+                    "viewable": false,
+                    "fields":{
+                        "Crew Code": {"ui:component": "costcode-selector", "editable": false, "viewable": false},
+                        "hours":{
+                            "editable": false,
+                            "viewable": false,
+                            "fields": {
+                                "st": { "viewable": false, "editable": false},
+                                "ot": { "viewable": false, "editable": false},
+                                "dt": { "viewable": false, "editable": false}
+                            }
+                        }
+                    }
+                },
+                "Length": {"editable": false, "viewable": false},
             }
         }
 

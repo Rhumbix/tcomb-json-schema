@@ -256,7 +256,9 @@ function getFormOptions(schema, ui_schema = {}, permissions = {}, objViewable = 
         return Object.assign(
             {},
             ui_schema,
-            {fields: Object.keys(schema.properties).reduce(
+            {"editable": objEditable,
+            "viewable": objViewable,
+            "fields": Object.keys(schema.properties).reduce(
                 (map, propertyKey) => {
                     const permission = permissions.properties ? permissions.properties[propertyKey] || {} : {}
                     map[propertyKey] = {
@@ -266,17 +268,17 @@ function getFormOptions(schema, ui_schema = {}, permissions = {}, objViewable = 
                                           objViewable,
                                           objEditable)
                     }
-            return map
-        }, {})
-    })
-  }
+                    return map
+                }, {})
+        })
+    }
 
-  let viewable = objViewable === false ? false : ('viewable' in permissions ? permissions.viewable : true)
-  let editable = objEditable === false ? false : ('editable' in permissions ? permissions.editable : true)
-  return Object.assign({}, {...ui_schema, editable: editable, viewable: viewable})
+    let viewable = objViewable === false ? false : ('viewable' in permissions ? permissions.viewable : true)
+    let editable = objEditable === false ? false : ('editable' in permissions ? permissions.editable : true)
+    return Object.assign({}, {...ui_schema, editable: editable, viewable: viewable})
 }
 
 module.exports = {
-  transform,
-  getFormOptions
+    transform,
+    getFormOptions
 }
