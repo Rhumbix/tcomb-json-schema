@@ -495,7 +495,6 @@ describe('getFormOptions', function () {
                 "Crew Code": {"ui:component": "costcode-selector"},
                 "End Location": {"ui:component": "masked-length"},
                 "Start Location": {"ui:component": "masked-length"},
-                "Length": {"editable": true},
                 "Note": {"ui:component": "textarea"},
             },
             "logic:listener": {
@@ -599,7 +598,6 @@ describe('getFormOptions', function () {
                 "Crew Code": {"ui:component": "costcode-selector"},
                 "End Location": {"ui:component": "masked-length"},
                 "Start Location": {"ui:component": "masked-length"},
-                "Length": {"editable": true},
                 "Note": {"ui:component": "textarea"},
             },
             "logic:listener": {
@@ -766,13 +764,16 @@ describe('getFormOptions', function () {
                 "labor": {
                     "type": "array",
                     "items":{
-                        "Crew Code": {"type": "object"},
-                        "hours":{
-                            "type": "object",
-                            "properties":{
-                                "st": { "type": "integer" },
-                                "ot": { "type": "integer" },
-                                "dt": { "type": "integer" }
+                        "type": "object",
+                        "properties":{
+                            "Crew Code": {"type": "object"},
+                            "hours":{
+                                "type": "object",
+                                "properties":{
+                                    "st": { "type": "integer" },
+                                    "ot": { "type": "integer" },
+                                    "dt": { "type": "integer" }
+                                }
                             }
                         }
                     }
@@ -785,11 +786,98 @@ describe('getFormOptions', function () {
             "fields": {
                 "labor": {
                     "item":{
-                        "Crew Code": {"ui:component": "costcode-selector"}
+                        "fields":{
+                            "Crew Code": {"ui:component": "costcode-selector"}
+                        }
+                    }
+                }
+            }
+        }
+
+        const permissions = {
+            "editable": true,
+            "viewable": true,
+            "properties": {
+                "labor": {
+                    "items":{
+                        "properties":{
+                            "hours":{
+                                "properties":{
+                                    "st": { "editable": false, "viewable": false }
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        }
+
+        const linear_tracking_ui_schema_output = {
+            "editable": true,
+            "viewable": true,
+            "fields": {
+                "labor": {
+                    "editable": true,
+                    "viewable": true,
+                    "item":{
+                        "editable": true,
+                        "viewable": true,
+                        "fields":{
+                            "Crew Code": {"ui:component": "costcode-selector", "editable": true, "viewable": true},
+                            "hours":{
+                                "editable": true,
+                                "viewable": true,
+                                "fields": {
+                                    "st": { "viewable": false, "editable": false},
+                                    "ot": { "viewable": true, "editable": true},
+                                    "dt": { "viewable": true, "editable": true}
+                                }
+                            }
+                        }
                     }
                 },
                 "Length": {"editable": true, "viewable": true},
+            }
+        }
 
+        const new_ui_schema = getFormOptions(linear_tracking_schema, linear_tracking_ui_schema, permissions)
+        assert.deepEqual(new_ui_schema, linear_tracking_ui_schema_output)
+    })
+
+    it('type: arrays; all false check', function () {
+        const linear_tracking_schema = {
+            "type": "object",
+            "properties": {
+                "labor": {
+                    "type": "array",
+                    "items":{
+                        "type": "object",
+                        "properties": {
+                            "Crew Code": {"type": "object"},
+                            "hours":{
+                                "type": "object",
+                                "properties":{
+                                    "st": { "type": "integer" },
+                                    "ot": { "type": "integer" },
+                                    "dt": { "type": "integer" }
+                                }
+                            }
+                        }
+                    }
+                },
+                "Length": {"type": "number"}
+            }
+        }
+
+        const linear_tracking_ui_schema = {
+            "fields": {
+                "labor": {
+                    "item":{
+                        "fields":{
+                            "Crew Code": {"ui:component": "costcode-selector"}
+                        }
+                    }
+                }
             }
         }
 
@@ -800,7 +888,13 @@ describe('getFormOptions', function () {
                 "Length": { "editable": true, "viewable": true },
                 "labor": {
                     "items":{
-                        "st": { "editable": true, "viewable": true }
+                        "properties":{
+                            "hours":{
+                                "properties":{
+                                    "st": { "editable": true, "viewable": true }
+                                }
+                            }
+                        }
                     }
                 }
             }
@@ -814,14 +908,18 @@ describe('getFormOptions', function () {
                     "editable": false,
                     "viewable": false,
                     "item":{
-                        "Crew Code": {"ui:component": "costcode-selector", "editable": false, "viewable": false},
-                        "hours":{
-                            "editable": false,
-                            "viewable": false,
-                            "fields": {
-                                "st": { "viewable": false, "editable": false},
-                                "ot": { "viewable": false, "editable": false},
-                                "dt": { "viewable": false, "editable": false}
+                        "editable": false,
+                        "viewable": false,
+                        "fields": {
+                            "Crew Code": {"ui:component": "costcode-selector", "editable": false, "viewable": false},
+                            "hours":{
+                                "editable": false,
+                                "viewable": false,
+                                "fields": {
+                                    "st": { "viewable": false, "editable": false},
+                                    "ot": { "viewable": false, "editable": false},
+                                    "dt": { "viewable": false, "editable": false}
+                                }
                             }
                         }
                     }
@@ -833,5 +931,6 @@ describe('getFormOptions', function () {
         const new_ui_schema = getFormOptions(linear_tracking_schema, linear_tracking_ui_schema, permissions)
         assert.deepEqual(new_ui_schema, linear_tracking_ui_schema_output)
     })
-
 })
+
+//Test for no "fields" property within array

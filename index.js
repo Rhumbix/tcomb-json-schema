@@ -243,22 +243,17 @@ transform.resetTypes = function resetTypes() {
 // permission for every component here. If there is just a single 'editable/viewable: true' at the top level object,
 // this goes through each field and duplicates those permissions to each.
 
-// If a struct is set to false for either permission no child can override that even if the permission
-// definition does. So a top level editable: false makes the whole document uneditable even if a single
-// field is set to editable: true.
+// If a struct/array is set to false for either permission no child can override that even if the permission
+// definition does. So a top level editable: false makes the whole document uneditable even if a field
+// is set to editable: true.
 function getFormOptions(schema, ui_schema = {}, permissions = {}, objViewable = false, objEditable = false){
     if(schema.type == "object"){
         objViewable = permissions.viewable || objViewable
         objEditable = permissions.editable || objEditable
-        if(!schema.properties){
-            return Object.assign({}, {...ui_schema, viewable: objViewable, editable: objEditable})
-        }
-        return Object.assign(
-            {},
-            ui_schema,
-            {"editable": objEditable,
-             "viewable": objViewable,
-             "fields": Object.keys(schema.properties).reduce(
+
+        const newUiSchema = Object.assign({}, {...ui_schema, viewable: objViewable, editable: objEditable})
+        if(schema.properties){
+            newUiSchema["fields"] = Object.keys(schema.properties).reduce(
                 (map, propertyKey) => {
                     const permission = permissions.properties ? permissions.properties[propertyKey] || {} : {}
                     map[propertyKey] = {
@@ -270,30 +265,25 @@ function getFormOptions(schema, ui_schema = {}, permissions = {}, objViewable = 
                     }
                     return map
                 }, {})
-        })
+        }
+        return newUiSchema
     }
 
     else if(schema.type == "array"){
-        return Object.assign(
-            {},
-            ui_schema,
-            {"editable": objEditable,
-             "viewable": objViewable,
-             "item": Object.keys(schema.items).reduce(
-                (map, propertyKey) => {
-                    const permission = permissions.items ? permissions.items[propertyKey] || {} : {}
-                    map[propertyKey] = {
-                        ...getFormOptions(schema.items[propertyKey],
-                                          ui_schema.item ? ui_schema.item[propertyKey] : {},
-                                          permission,
-                                          objViewable,
-                                          objEditable)
-                    }
-                    return map
-                }, {})
-        })
+        objViewable = permissions.viewable || objViewable
+        objEditable = permissions.editable || objEditable
+        const newUiSchema = Object.assign({}, {...ui_schema, viewable: objViewable, editable: objEditable})
+        newUiSchema["item"] = {
+            ...getFormOptions(schema.items,
+                              ui_schema.item || {},
+                              permissions.items || {},
+                              objViewable,
+                              objEditable)
+        }
+        return newUiSchema
     }
 
+    // "Primitive" types
     let viewable = objViewable === false ? false : ('viewable' in permissions ? permissions.viewable : true)
     let editable = objEditable === false ? false : ('editable' in permissions ? permissions.editable : true)
     return Object.assign({}, {...ui_schema, editable: editable, viewable: viewable})
