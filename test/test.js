@@ -557,4 +557,123 @@ describe('getFormOptions', function () {
         assert.deepEqual(new_ui_schema, linear_tracking_ui_schema_output)
     })
 
+    it('multiple nesteded structs with varying ui:components, one "editable: false" property; and a optional/missing ui_schema(in the nested struct)', function () {
+        const linear_tracking_schema = {
+            "description": "",
+            "type": "object",
+            "properties": {
+                "Date Completed": {"type": "string"},
+                "labor": {
+                    "type": "object",
+                    "properties":{
+                        "Crew Code": {"type": "object"},
+                        "hours":{
+                            "type": "object",
+                            "properties":{
+                                "st": { "type": "integer" },
+                                "ot": { "type": "integer" },
+                                "dt": { "type": "integer" }
+                            }
+                        }
+                    }
+                },
+                "Crew Code": {"type": "object"},
+                "End Location": {"type": "integer"},
+                "Start Location": {"type": "integer"},
+                "Length": {"type": "number"},
+                "Note": {"type": "string"},
+            },
+            "required": ["Date Completed", "Start Location", "End Location"]
+        }
+
+        const linear_tracking_ui_schema = {
+            "fields": {
+                "Date Completed": {"ui:component": "date"},
+                "labor": {
+                    "fields":{
+                        "Crew Code": {"ui:component": "costcode-selector"}
+                    }
+                },
+                "Crew Code": {"ui:component": "costcode-selector"},
+                "End Location": {"ui:component": "masked-length"},
+                "Start Location": {"ui:component": "masked-length"},
+                "Length": {"editable": true},
+                "Note": {"ui:component": "textarea"},
+            },
+            "logic:listener": {
+                "trigger": "onChange",
+                "function": "eval",
+                "eval": 'value["Start Location"]&&value["End Location"]&&(Math.abs(value["Start Location"]-value["End Location"]))',
+                "output_key": "/Length",
+            },
+            "order": ["Date Completed", "Crew Code", "Start Location", "End Location", "Length", "Note"],
+            "mobile_layout": {
+                "list_item": {
+                    "primary": {
+                        "key": "",
+                        "template": "<%= (value['Start Location'] ? value['Start Location'].toString().slice(0,-2) + '+' + value['Start Location'].toString().slice(-2) : '') + ' - ' + (value['End Location'] ? value['End Location'].toString().slice(0,-2) + '+' + value['End Location'].toString().slice(-2) : '') %>",
+                    },
+                    "secondary": {"key": "/Note"},
+                    "tertiary": {"key": "/Date Completed", "template": "<%= formatDate(value) %>"},
+                }
+            }
+        }
+
+        const permissions = {
+            "editable": true,
+            "viewable": true,
+            "properties": {
+                "Length": {"editable": false}
+            }
+        }
+
+        const linear_tracking_ui_schema_output = {
+            "fields": {
+                "Date Completed": {"ui:component": "date", "editable": true, "viewable": true},
+                "labor": {
+                    "fields":{
+                        "Crew Code": {"ui:component": "costcode-selector", "editable": true, "viewable": true},
+                        "hours":{
+                            "fields": {
+                                "st": { "viewable": true, "editable": true},
+                                "ot": { "viewable": true, "editable": true},
+                                "dt": { "viewable": true, "editable": true}
+                            }
+                        }
+                    }
+                },
+                "Crew Code": {"ui:component": "costcode-selector", "editable": true, "viewable": true},
+                "End Location": {"ui:component": "masked-length", "editable": true, "viewable": true},
+                "Start Location": {"ui:component": "masked-length", "editable": true, "viewable": true},
+                "Length": {"editable": false, "viewable": true},
+                "Note": {"ui:component": "textarea", "editable": true, "viewable": true},
+                "Crew Code": {"ui:component": "costcode-selector", "editable": true, "viewable": true},
+                "End Location": {"ui:component": "masked-length", "editable": true, "viewable": true},
+                "Start Location": {"ui:component": "masked-length", "editable": true, "viewable": true},
+                "Length": {"editable": false, "viewable": true},
+                "Note": {"ui:component": "textarea", "editable": true, "viewable": true},
+            },
+            "logic:listener": {
+                "trigger": "onChange",
+                "function": "eval",
+                "eval": 'value["Start Location"]&&value["End Location"]&&(Math.abs(value["Start Location"]-value["End Location"]))',
+                "output_key": "/Length",
+            },
+            "order": ["Date Completed", "Crew Code", "Start Location", "End Location", "Length", "Note"],
+            "mobile_layout": {
+                "list_item": {
+                    "primary": {
+                        "key": "",
+                        "template": "<%= (value['Start Location'] ? value['Start Location'].toString().slice(0,-2) + '+' + value['Start Location'].toString().slice(-2) : '') + ' - ' + (value['End Location'] ? value['End Location'].toString().slice(0,-2) + '+' + value['End Location'].toString().slice(-2) : '') %>",
+                    },
+                    "secondary": {"key": "/Note"},
+                    "tertiary": {"key": "/Date Completed", "template": "<%= formatDate(value) %>"},
+                }
+            }
+        }
+
+        const new_ui_schema = getFormOptions(linear_tracking_schema, linear_tracking_ui_schema, permissions)
+        assert.deepEqual(new_ui_schema, linear_tracking_ui_schema_output)
+    })
+
 })

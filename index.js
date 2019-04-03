@@ -246,7 +246,7 @@ transform.resetTypes = function resetTypes() {
 // If a struct is set to false for either permission no child can override that even if the permission
 // definition does. So a top level editable: false makes the whole document uneditable even if a single
 // field is set to editable: true.
-function getFormOptions(schema, ui_schema, permissions = {}, objViewable = false, objEditable = false){
+function getFormOptions(schema, ui_schema = {}, permissions = {}, objViewable = false, objEditable = false){
     if(schema.type == "object"){
         objViewable = permissions.viewable || objViewable
         objEditable = permissions.editable || objEditable
@@ -261,7 +261,7 @@ function getFormOptions(schema, ui_schema, permissions = {}, objViewable = false
                     const permission = permissions.properties ? permissions.properties[propertyKey] || {} : {}
                     map[propertyKey] = {
                         ...getFormOptions(schema.properties[propertyKey],
-                                          ui_schema.fields[propertyKey],
+                                          ui_schema.fields ? ui_schema.fields[propertyKey] : {},
                                           permission,
                                           objViewable,
                                           objEditable)
