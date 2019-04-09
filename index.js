@@ -88,7 +88,12 @@ var types = {
     },
 
     boolean: function () {
-    return t.Boolean;
+        if(registerTypes.hasOwnProperty('boolean')){
+            return registerTypes['boolean']
+        }
+        else{
+            return t.Boolean;
+        }
     },
 
     object: function (s, ui) {
