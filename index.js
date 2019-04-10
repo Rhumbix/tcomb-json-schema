@@ -251,10 +251,17 @@ transform.resetTypes = function resetTypes() {
 // If a struct/array is set to false for either permission no child can override that even if the permission
 // definition does. So a top level editable: false makes the whole document uneditable even if a field
 // is set to editable: true.
-function getFormOptions(schema, ui_schema = {}, permissions = {}, objViewable = false, objEditable = false){
+
+function getFormOptions(schema, ui_schema = {}, permissions = {}){
+    const topStructViewable = permissions.viewable === true
+    const topStructEditable = permissions.editable === true
+    return _getFormOptions(schema, ui_schema, permissions, topStructViewable, topStructEditable)
+}
+
+function _getFormOptions(schema, ui_schema = {}, permissions = {}, objViewable, objEditable){
     if(schema.type == "object"){
-        objViewable = permissions.viewable || objViewable
-        objEditable = permissions.editable || objEditable
+         objViewable = !(permissions.viewable == false || objViewable == false)
+         objEditable = !(permissions.editable == false || objEditable == false)
 
         const newUiSchema = Object.assign({}, {...ui_schema, viewable: objViewable, editable: objEditable})
         if(schema.properties){
@@ -262,7 +269,7 @@ function getFormOptions(schema, ui_schema = {}, permissions = {}, objViewable = 
                 (map, propertyKey) => {
                     const permission = permissions.properties ? permissions.properties[propertyKey] || {} : {}
                     map[propertyKey] = {
-                        ...getFormOptions(schema.properties[propertyKey],
+                        ..._getFormOptions(schema.properties[propertyKey],
                                           ui_schema.fields ? ui_schema.fields[propertyKey] : {},
                                           permission,
                                           objViewable,
@@ -275,11 +282,11 @@ function getFormOptions(schema, ui_schema = {}, permissions = {}, objViewable = 
     }
 
     else if(schema.type == "array"){
-        objViewable = permissions.viewable || objViewable
-        objEditable = permissions.editable || objEditable
+        objViewable = !(permissions.viewable == false || objViewable == false)
+        objEditable = !(permissions.editable == false || objEditable == false)
         const newUiSchema = Object.assign({}, {...ui_schema, viewable: objViewable, editable: objEditable})
         newUiSchema["item"] = {
-            ...getFormOptions(schema.items,
+            ..._getFormOptions(schema.items,
                               ui_schema.item || {},
                               permissions.items || {},
                               objViewable,
