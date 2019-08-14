@@ -79,8 +79,6 @@ class Listener{
     _maybeUpdateComponentStateInsideForm = (outputKey, output) => {
         var path = outputKey.replace(/\//g, '.').substr(1)
         const component = this.formRef.getComponent(path)
-        // console.log("compint")
-        console.log("COMPONENT", component, output)
         if (output && (output != component.state.value)) {
             component.onChange(output)
         }
