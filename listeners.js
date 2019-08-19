@@ -74,17 +74,16 @@ class Listener{
     }
 
     _fireListenerLogicAndSetState = (val, storeSubSection, schema, ui_schema) => {
-        if(val["function"] && val["function"] == "list_adder") {
-            const output = this.listNumberAdder(storeSubSection, schema, ui_schema)
-            this._maybeUpdateComponentStateInsideForm(val.output_key, output)
-        } else if(val["function"] && val["function"] == "sub_list_adder") {
+        let output = null
+        if(val["function"] == "list_adder") {
+            output = this.listNumberAdder(storeSubSection, schema, ui_schema)
+        } else if(val["function"] == "sub_list_adder") {
             const subListPath = val["sub_list_path"]
-            const output = this.subListNumberAdder(storeSubSection, subListPath)
-            this._maybeUpdateComponentStateInsideForm(val.output_key, output)
-        } else if(val["function"] && val["function"] == "eval") {
-            const output = this.evalForm(storeSubSection, val["eval"])
-            this._maybeUpdateComponentStateInsideForm(val.output_key, output)
+            output = this.subListNumberAdder(storeSubSection, subListPath)
+        } else if(val["function"] == "eval") {
+            output = this.evalForm(storeSubSection, val["eval"])
         }
+        this._maybeUpdateComponentStateInsideForm(val.output_key, output)
     }
 
     _maybeUpdateComponentStateInsideForm = (outputKey, output) => {
