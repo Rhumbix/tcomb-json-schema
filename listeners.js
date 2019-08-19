@@ -42,6 +42,8 @@ class Listener{
         }
     }
 
+    // Value is the entire store
+    // Path is a json pointer to what changed
     update(value, path) {
         let form = Object.assign({}, value)
         // Remove integers from path which are array element pointers and
@@ -59,6 +61,15 @@ class Listener{
                 const {schema, ui_schema} = this._getSchemaAtPath(key)
                 _.each(listenerInfo, (val) => this._fireListenerLogicAndSetState(val, formSubSection, schema, ui_schema))
             }
+        })
+    }
+
+    updateAll(value) {
+        let form = Object.assign({}, value)
+        _.each(this.listeners, (listenerInfo, key) => {
+            const formSubSection = jsonpointer.get(form, key)
+            const {schema, ui_schema} = this._getSchemaAtPath(key)
+            _.each(listenerInfo, (val) => this._fireListenerLogicAndSetState(val, formSubSection, schema, ui_schema))
         })
     }
 
