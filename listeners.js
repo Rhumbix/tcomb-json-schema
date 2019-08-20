@@ -98,7 +98,8 @@ class Listener{
         let newPath = path.split("/")
         let schema = Object.assign({}, this.schema)
         let ui_schema = Object.assign({}, this.ui_schema)
-        let pathPiece = null
+        // Pop off the first "" which indicates the entire document
+        let pathPiece = newPath.shift()
         while (newPath.length > 0) {
             pathPiece = newPath.shift()
             if (schema.type == "array") {
@@ -119,6 +120,7 @@ class Listener{
 
     // Logic functions run by listeners
     evalForm(value, func) {
+        if(!value) return null
         let output = eval(func)
         return !_.isNil(output) && output.toString()
     }
