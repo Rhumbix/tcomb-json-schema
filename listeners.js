@@ -32,14 +32,6 @@ class Listener{
                 this._getListenersFromUISchema(value, path + '/' + key, acc)
             }.bind(this))
         }
-
-        else if (ui_schema["item"]) {
-            if (ui_schema["item"]["fields"]) {
-                _.each(ui_schema["item"]["fields"], function (value, key) {
-                    this._getListenersFromUISchema(value, path + '/' + key, acc)
-                }.bind(this))
-            }
-        }
     }
 
     // Value is the entire store
@@ -83,10 +75,10 @@ class Listener{
         } else if(val["function"] == "eval") {
             output = this.evalForm(storeSubSection, val["eval"])
         }
-        this._maybeUpdateComponentStateInsideForm(val.output_key, output)
+        this._updateComponentStateInsideForm(val.output_key, output)
     }
 
-    _maybeUpdateComponentStateInsideForm = (outputKey, output) => {
+    _updateComponentStateInsideForm = (outputKey, output) => {
         var path = outputKey.replace(/\//g, '.').substr(1)
         const component = this.formRef.getComponent(path)
         if (output && (output != component.state.value)) {
