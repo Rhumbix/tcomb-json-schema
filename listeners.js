@@ -18,9 +18,9 @@ class Listener{
     _getListenersFromUISchema(ui_schema, path, acc) {
         const listeners = ui_schema["listener"] || ui_schema["logic:listener"]
         if(listeners){
-            acc[path] = (acc[path] || [])
+            acc[path] = []
             if (_.isArray(listeners)) {
-                acc[path].concat(listeners)
+                acc[path] = acc[path].concat(listeners)
             }
             else{
                 acc[path].push(listeners)
@@ -149,7 +149,6 @@ class Listener{
                 return acc
             }
         }
-
         return func(0, val, schema, ui).toString()
     }
 
