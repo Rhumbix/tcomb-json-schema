@@ -3,6 +3,7 @@
 var t = require('tcomb');
 var fcomb = require('fcomb');
 var util = require('./util');
+const Listener = require('./listeners').Listener
 
 var SchemaType = t.enums.of('null string number integer boolean object array', 'SchemaType');
 
@@ -303,5 +304,6 @@ function _getFormOptions(schema, ui_schema = {}, permissions = {}, objViewable, 
 
 module.exports = {
     transform,
-    getFormOptions
+    getFormOptions,
+    Listener
 }
