@@ -261,8 +261,8 @@ function getFormOptions(schema, ui_schema = {}, permissions = {}){
 
 function _getFormOptions(schema, ui_schema = {}, permissions = {}, objViewable, objEditable){
     if(schema.type == "object"){
-         objViewable = !(permissions.viewable == false || objViewable == false)
-         objEditable = !(permissions.editable == false || objEditable == false)
+        objViewable = !(permissions.viewable == false || objViewable == false)
+        objEditable = !(permissions.editable == false || objEditable == false)
 
         const newUiSchema = Object.assign({}, {...ui_schema, viewable: objViewable, editable: objEditable})
         if(schema.properties){
