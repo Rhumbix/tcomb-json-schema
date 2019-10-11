@@ -65,7 +65,7 @@ class Listener{
         })
     }
 
-    _fireListenerLogicAndSetState = (val, storeSubSection, schema, ui_schema) => {
+    _fireListenerLogicAndSetState(val, storeSubSection, schema, ui_schema) {
         let output = null
         if(val["function"] == "list_adder") {
             output = this.listNumberAdder(storeSubSection, schema, ui_schema)
@@ -78,7 +78,7 @@ class Listener{
         this._updateComponentStateInsideForm(val.output_key, output)
     }
 
-    _updateComponentStateInsideForm = (outputKey, output) => {
+    _updateComponentStateInsideForm(outputKey, output) {
         var path = outputKey.replace(/\//g, '.').substr(1)
         const component = this.formRef.getComponent(path)
         if (output && (output != component.state.value)) {
@@ -117,7 +117,7 @@ class Listener{
         return !_.isNil(output) && output.toString()
     }
 
-    listNumberAdder = (val, schema, ui) => {
+    listNumberAdder(val, schema, ui) {
         if (!val) { return 0 }
         var func = function (acc, val, schema, ui) {
             if (!schema) { return acc }
@@ -144,7 +144,7 @@ class Listener{
         return func(0, val, schema, ui).toString()
     }
 
-    subListNumberAdder = (values, subListPath) => {
+    subListNumberAdder(values, subListPath) {
         let totalHours = 0
         _.each(values, function(val) {
             const subVal = jsonpointer.get(val, subListPath)
