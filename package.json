@@ -1,7 +1,7 @@
 {
-  "name": "tcomb-json-schema",
-  "version": "0.3.0",
-  "description": "Transforms a JSON Schema to a tcomb type",
+  "name": "@rhumbix/tcomb-json-schema",
+  "version": "1.0.0",
+  "description": "Transform a JSON schema to a tcomb form",
   "main": "index.js",
   "files": [
     "index.js",
@@ -15,31 +15,25 @@
   },
   "repository": {
     "type": "git",
-    "url": "https://github.com/gcanti/tcomb-json-schema.git"
+    "url": "git+https://github.com/Rhumbix/tcomb-json-schema.git"
   },
-  "author": "Giulio Canti <giulio.canti@gmail.com>",
-  "license": "MIT",
-  "bugs": {
-    "url": "https://github.com/gcanti/tcomb-json-schema/issues"
-  },
-  "homepage": "https://github.com/gcanti/tcomb-json-schema",
   "dependencies": {
-    "fcomb": "^0.1.0",
-    "tcomb": "^3.0.0",
+    "fcomb": "0.1.0",
+    "tcomb": "3.0.0",
     "lodash": "4.17.10",
     "jsonpointer": "4.0.1"
   },
   "devDependencies": {
-    "@babel/cli": "^7.5.5",
-    "@babel/core": "^7.5.5",
-    "@babel/node": "^7.5.5",
-    "@babel/plugin-proposal-class-properties": "^7.5.5",
-    "@babel/preset-env": "^7.5.5",
-    "@babel/register": "^7.5.5",
+    "@babel/cli": "7.5.5",
+    "@babel/core": "7.5.5",
+    "@babel/node": "7.5.5",
+    "@babel/plugin-proposal-class-properties": "7.5.5",
+    "@babel/preset-env": "7.5.5",
+    "@babel/register": "7.5.5",
     "assert-diff": "2.0.3",
     "eslint": "1.10.3",
-    "mocha": "^2.4.5",
-    "nodemon": "^1.19.1"
+    "mocha": "2.4.5",
+    "nodemon": "1.19.1"
   },
   "tags": [
     "tcomb",
@@ -48,5 +42,11 @@
   "keywords": [
     "tcomb",
     "JSON Schema"
-  ]
+  ],
+  "author": "Rhumbix <dev@rhumbix.com>",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/Rhumbix/tcomb-json-schema/issues"
+  },
+  "homepage": "https://github.com/Rhumbix/tcomb-json-schema#readme"
 }
