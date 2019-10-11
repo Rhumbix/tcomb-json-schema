@@ -1,5 +1,6 @@
 {
   "name": "@rhumbix/tcomb-json-schema",
+  "private": true,
   "version": "1.0.0",
   "description": "Transform a JSON schema to a tcomb form",
   "main": "dist/index.cjs.js",
