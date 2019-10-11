@@ -2,13 +2,15 @@
   "name": "@rhumbix/tcomb-json-schema",
   "version": "1.0.0",
   "description": "Transform a JSON schema to a tcomb form",
-  "main": "index.js",
+  "main": "dist/index.cjs.js",
+  "module": "dist/index.esm.js",
+  "browser": "dist/index.umd.js",
   "files": [
-    "index.js",
-    "util.js",
-    "listeners.js"
+    "dist"
   ],
   "scripts": {
+    "build": "rollup -c",
+    "dev": "rollup -c -w",
     "lint": "eslint index.js",
     "test": "./node_modules/.bin/mocha --compilers js:@babel/register",
     "testw": "./node_modules/.bin/mocha --compilers js:@babel/register --watch"
@@ -19,21 +21,30 @@
   },
   "dependencies": {
     "fcomb": "0.1.0",
-    "tcomb": "3.0.0",
+    "jsonpointer": "4.0.1",
     "lodash": "4.17.10",
-    "jsonpointer": "4.0.1"
+    "tcomb": "3.0.0"
   },
   "devDependencies": {
-    "@babel/cli": "7.5.5",
     "@babel/core": "7.5.5",
-    "@babel/node": "7.5.5",
+    "@babel/plugin-proposal-async-generator-functions": "7.2.0",
     "@babel/plugin-proposal-class-properties": "7.5.5",
+    "@babel/plugin-proposal-decorators": "7.4.4",
+    "@babel/plugin-proposal-object-rest-spread": "7.5.5",
+    "@babel/plugin-syntax-dynamic-import": "7.2.0",
+    "@babel/plugin-transform-modules-commonjs": "7.5.0",
     "@babel/preset-env": "7.5.5",
-    "@babel/register": "7.5.5",
+    "@babel/preset-react": "7.0.0",
+    "@babel/preset-typescript": "7.3.3",
     "assert-diff": "2.0.3",
+    "babel-plugin-dynamic-import-node": "2.3.0",
+    "babel-plugin-lodash": "3.3.4",
     "eslint": "1.10.3",
     "mocha": "2.4.5",
-    "nodemon": "1.19.1"
+    "nodemon": "1.19.1",
+    "rollup": "1.23.1",
+    "rollup-plugin-babel": "4.3.3",
+    "rollup-plugin-node-resolve": "5.2.0"
   },
   "tags": [
     "tcomb",
