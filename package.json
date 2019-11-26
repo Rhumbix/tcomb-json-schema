@@ -1,6 +1,6 @@
 {
   "name": "@rhumbix/tcomb-json-schema",
-  "version": "1.0.3",
+  "version": "1.0.4",
   "description": "Transform a JSON schema to a tcomb form",
   "main": "dist/index.js",
   "files": [

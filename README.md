@@ -1,5 +1,14 @@
 Transforms a JSON Schema to a type [tcomb](https://github.com/gcanti/tcomb) type.
 
+# Updating the npm package
+- Clone the latest repo
+- Make sure you have 2FA turned on for your npm account, you will need that on to update the package. If you do not have access to the Rhumbix npm account - ask a fellow dev to add you.
+- Login to npm - `npm login`
+- Install node modules - `yarn install`
+- Update “version” in `package.json` within the repo directory to the next version number
+- Create a new build - `yarn run build`
+- Publish the new build - `npm publish` (It will say “This operation requires a one-time password.” - enter your 6-digit 2FA code)
+
 # Compatibility
 
 - tcomb ^2.0.0 -> tcomb-json-schema ^0.2.5
