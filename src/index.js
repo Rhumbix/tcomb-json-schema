@@ -70,7 +70,7 @@ var types = {
     if (s.hasOwnProperty('integer') && s.integer) {
         predicate = and(predicate, util.isInteger);
     }
-    return predicate ? t.subtype(t.Number, predicate) : t.Number;
+    return predicate ? t.subtype(util.Num, predicate) : util.Num;
     },
 
     integer: function (s) {
