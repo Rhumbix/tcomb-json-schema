@@ -7,6 +7,7 @@ class Listener{
         this.ui_schema = Object.assign({}, ui_schema)
         this.formRef = formRef
         this.listeners = this._getListeners()
+        this.listIndexPlaceholder = "/-/"
     }
 
     _getListeners() {
@@ -31,6 +32,12 @@ class Listener{
             _.each(ui_schema["fields"], function (value, key) {
                 this._getListenersFromUISchema(value, path + '/' + key, acc)
             }.bind(this))
+        }
+        // check list items for fields with listeners
+        if (ui_schema["item"] && ui_schema["item"]["fields"]){
+            _.each(ui_schema["item"]["fields"], function (value, key) {
+                this._getListenersFromUISchema(value, path, acc);
+            }.bind(this));
         }
     }
 
@@ -66,23 +73,74 @@ class Listener{
     }
 
     _fireListenerLogicAndSetState(val, storeSubSection, schema, ui_schema) {
-        let output = null
-        if(val["function"] == "list_adder") {
-            output = this.listNumberAdder(storeSubSection, schema, ui_schema)
-        } else if(val["function"] == "sub_list_adder") {
-            const subListPath = val["sub_list_path"]
-            output = this.subListNumberAdder(storeSubSection, subListPath)
-        } else if(val["function"] == "eval") {
-            output = this.evalForm(storeSubSection, val["eval"])
+        let output = null;
+        if (val["function"] == "list_adder") {
+            output = this.listNumberAdder(storeSubSection, schema, ui_schema);
+        } else if (val["function"] == "sub_list_adder") {
+            var subListPath = val["sub_list_path"];
+            output = this.subListNumberAdder(storeSubSection, subListPath);
+        } else if (val["function"] == "eval") {
+            output = this.evalForm(storeSubSection, val["eval"]);
+        } else if (val["function"] == "eval_list"){
+            output = this.evalFormList(storeSubSection, val["eval"], val.output_key)
         }
-        this._updateComponentStateInsideForm(val.output_key, output)
+        this._updateComponentStateInsideForm(val.output_key, output);
+    }
+
+    _updateListComponent(component_value, output) {
+        var updatesMade = false
+        if (ccomponent_value && output){
+            // go through the list and if there is a result and it is diff than the current result - update it
+            var updatedValues = component_value.map((item, index) => {
+                var currentItem = Object.assign({}, item)
+                // itemPath is the location within the list item (obj) where 
+                // the field we are updating is - ex. ["Chain Markers", "Length"]
+                var itemPath = output[index]["itemPath"]  
+                var listenerField = itemPath[1]
+                  
+                var listItem = currentItem[itemPath[0]]
+                var currentValue = listItem && listenerField in listItem ? listItem[listenerField] : null
+                // we only want to update the item if the results are different
+                if (output[index]["result"] && currentValue != output[index]["result"]){
+                    updatesMade = true
+                    var result = output[index]["result"]
+                    currentItem[itemPath[0]][itemPath[1]] = result
+                    return currentItem
+                }
+                return currentItem
+            })
+        }
+        // if any updates are made - update the list component with the new values
+        if (updatesMade){
+            return updatedValues
+        }
+        return null
     }
 
     _updateComponentStateInsideForm(outputKey, output) {
-        var path = outputKey.replace(/\//g, '.').substr(1)
-        const component = this.formRef.getComponent(path)
-        if (output && (output != component.state.value)) {
-            component.onChange(output)
+        var path = outputKey.replace(/\//g, '.').substr(1);
+        if (outputKey.includes("-")){ // indicates it is coming from a list
+            /* Because we don't have the specific index of what list item is being edited
+               we can't get the component because we don't have the full path to the field nested in the list
+               and we can't hardcode an index into the output key. So check the whole list for updated results.
+               This currently only supports list fields within an object in a list.
+               TODO: We need to come up with a more scalable plan that is more flexible */
+
+            // get the root list component that holds the list values
+            var componentPath = path.slice(0, outputKey.indexOf(this.listIndexPlaceholder) - 1)
+            var component = this.formRef.getComponent(componentPath)
+            // if any items have been updated this will return a list of all items with updated results
+            // if nothing is updated it will return null
+            var updatedList = _updateListComponent(component.state.value, output)
+            if (updatedList){
+                component.onChange(updatedValues, componentPath)
+            }
+        }
+        else{
+            var component = this.formRef.getComponent(path);
+            if (output && output != component.state.value) {
+                component.onChange(output);
+            }
         }
     }
 
@@ -115,6 +173,24 @@ class Listener{
         if(!value) return null
         let output = eval(func)
         return !_.isNil(output) && output.toString()
+    }
+
+    evalFormList(listValue, func, outputKey) {
+        if (!listValue) return null;
+        var output = []
+        var itemPath = outputKey.slice(outputKey.indexOf(this.listIndexPlaceholder) + this.listIndexPlaceholder.length).split("/")
+        _.each(listValue, function(listItem, index) {
+            var value = listItem[itemPath[0]]
+            var result = null
+            try{
+                result = eval(func)
+            }
+            catch(e){
+                // the function could not be run - likely because all required data is not available
+            }
+            output.push({result: result, itemPath: itemPath})
+        })
+        return output
     }
 
     listNumberAdder(val, schema, ui) {
