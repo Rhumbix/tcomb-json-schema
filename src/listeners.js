@@ -89,7 +89,7 @@ class Listener{
 
     _updateListComponent(component_value, output) {
         var updatesMade = false
-        if (ccomponent_value && output){
+        if (component_value && output){
             // go through the list and if there is a result and it is diff than the current result - update it
             var updatedValues = component_value.map((item, index) => {
                 var currentItem = Object.assign({}, item)
@@ -131,8 +131,8 @@ class Listener{
             var component = this.formRef.getComponent(componentPath)
             // if any items have been updated this will return a list of all items with updated results
             // if nothing is updated it will return null
-            var updatedList = _updateListComponent(component.state.value, output)
-            if (updatedList){
+            var updatedValues = this._updateListComponent(component.state.value, output)
+            if (updatedValues){
                 component.onChange(updatedValues, componentPath)
             }
         }
