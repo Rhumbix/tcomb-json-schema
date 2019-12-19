@@ -180,6 +180,7 @@ class Listener{
     // Logic functions run by listeners
     evalForm(value, func) {
         if(!value) return null
+        // TODO: can we do something other than eval to protect us from ourselves?
         let output = eval(func)
         return !_.isNil(output) && output.toString()
     }
@@ -191,6 +192,7 @@ class Listener{
         listValue.forEach((listItem, index) => {
             var value = listItem[itemPath[0]]
             var result = null
+            // TODO: can we do something other than eval to protect us from ourselves?
             try{
                 result = eval(func)
             }
