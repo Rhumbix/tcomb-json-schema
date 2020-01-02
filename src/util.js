@@ -7,7 +7,7 @@ function isInteger(n) {
 }
 
 function isNumber(n) {
-	return !isNaN(n) 
+	return !isNaN(parseFloat(n)) && isFinite(n)
 }
 
 var Null = t.irreducible('Null', function (x) {
