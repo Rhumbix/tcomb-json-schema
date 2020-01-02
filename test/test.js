@@ -3,6 +3,7 @@ var assert = require('assert');
 var t = require('tcomb');
 var { transform, getFormOptions } = require('../index');
 var util = require('../util');
+var rmbxUtil = require('../src/util')
 var assert = require('assert-diff');
 
 var Str = t.Str;
@@ -1087,6 +1088,22 @@ describe('getFormOptions', function () {
 
         const new_ui_schema = getFormOptions(linear_tracking_schema, linear_tracking_ui_schema, permissions)
         assert.deepEqual(new_ui_schema, linear_tracking_ui_schema_output)
+    })
+})
+
+describe('utils', function () {
+    it('isNumeric allows integers', function () {
+var rmbxUtil = require('../src/util')
+        assert.equal(true, rmbxUtil.isInteger(1))
+        assert.equal(true, rmbxUtil.isInteger("1"))
+        assert.equal(false, rmbxUtil.isInteger(" "))
+    })
+
+    it('isNumeric allows floats', function () {
+        assert.equal(true, rmbxUtil.isNumber(1))
+        assert.equal(true, rmbxUtil.isNumber(1.1))
+        assert.equal(true, rmbxUtil.isNumber("1.1"))
+        assert.equal(false, rmbxUtil.isNumber(" "))
     })
 })
 

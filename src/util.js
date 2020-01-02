@@ -6,6 +6,7 @@ function isInteger(n) {
   return n % 1 === 0;
 }
 
+// https://stackoverflow.com/a/1830844/7376
 function isNumber(n) {
 	return !isNaN(parseFloat(n)) && isFinite(n)
 }
