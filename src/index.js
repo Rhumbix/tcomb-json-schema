@@ -305,5 +305,6 @@ function _getFormOptions(schema, ui_schema = {}, permissions = {}, objViewable, 
 module.exports = {
     transform,
     getFormOptions,
-    Listener
+    Listener,
+    util
 }
