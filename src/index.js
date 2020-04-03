@@ -56,6 +56,9 @@ var types = {
     },
 
     number: function (s) {
+    if (registerTypes.hasOwnProperty("number")) {
+        return registerTypes["number"]
+    }
     var predicate;
     if (s.hasOwnProperty('minimum')) {
         predicate = s.exclusiveMinimum ?
@@ -74,6 +77,9 @@ var types = {
     },
 
     integer: function (s) {
+    if(registerTypes.hasOwnProperty('integer')){
+        return registerTypes['integer']
+    }
     var predicate;
     if (s.hasOwnProperty('minimum')) {
         predicate = s.exclusiveMinimum ?
