@@ -1,6 +1,6 @@
 {
   "name": "@rhumbix/tcomb-json-schema",
-  "version": "1.0.8",
+  "version": "1.0.9",
   "description": "Transform a JSON schema to a tcomb form",
   "main": "dist/index.js",
   "files": [
@@ -21,7 +21,7 @@
     "@babel/register": "^7.7.7",
     "fcomb": "0.1.0",
     "jsonpointer": "4.0.1",
-    "lodash": "4.17.10",
+    "lodash": "4.17.12",
     "tcomb": "3.0.0"
   },
   "devDependencies": {
